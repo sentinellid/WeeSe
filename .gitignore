@@ -1,0 +1,51 @@
+# Visual Studio
+.vs/
+bin/
+obj/
+*.user
+*.suo
+*.cache
+*.log
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+build/
+bld/
+[Bb]in/
+[Oo]bj/
+
+# NuGet packages
+*.nupkg
+packages/
+
+# Database
+*.mdf
+*.ldf
+*.db
+*.sqlite
+
+# Secrets
+appsettings.Development.json
+appsettings.Production.json
+secrets.json
+
+# Logs
+logs/
+*.log
+
+# Runtime files
+*.dll
+*.exe
+*.pdb
+
+# Temporary files
+*.tmp
+*.temp
+*~
+
+# IDE files
+.vscode/
+*.code-workspace

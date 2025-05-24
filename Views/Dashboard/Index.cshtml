@@ -1,0 +1,139 @@
+@{
+    ViewData["Title"] = "Dashboard WeeSe";
+}
+
+<div class="dashboard-container">
+    <div class="welcome-section">
+        <div class="row">
+            <div class="col-12">
+                <div class="welcome-card">
+                    <h1><i class="fas fa-tachometer-alt"></i> Dashboard WeeSe</h1>
+                    <p class="lead">Benvenuto nel sistema di configurazione vetrate professionali</p>
+                    <p>Utente connesso: <strong>@User.Identity?.Name</strong></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-modules">
+        <div class="row g-4">
+            <!-- Gestione Utenze -->
+            <div class="col-md-6 col-lg-4">
+                <div class="module-card">
+                    <div class="module-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>Gestione Utenze</h3>
+                    <p>Amministra utenti e permessi del sistema</p>
+                    <a href="@Url.Action("Index", "GestioneUtenze")" class="btn btn-primary">
+                        <i class="fas fa-arrow-right"></i> Vai
+                    </a>
+                </div>
+            </div>
+
+            <!-- Gestione Listini -->
+            <div class="col-md-6 col-lg-4">
+                <div class="module-card">
+                    <div class="module-icon">
+                        <i class="fas fa-list-alt"></i>
+                    </div>
+                    <h3>Gestione Listini</h3>
+                    <p>Configura prezzi e listini prodotti</p>
+                    <a href="@Url.Action("Index", "GestioneListini")" class="btn btn-primary">
+                        <i class="fas fa-arrow-right"></i> Vai
+                    </a>
+                </div>
+            </div>
+
+            <!-- Preventivi -->
+            <div class="col-md-6 col-lg-4">
+                <div class="module-card">
+                    <div class="module-icon">
+                        <i class="fas fa-calculator"></i>
+                    </div>
+                    <h3>Preventivi</h3>
+                    <p>Crea e gestisci preventivi clienti</p>
+                    <a href="@Url.Action("Index", "Preventivi")" class="btn btn-success">
+                        <i class="fas fa-arrow-right"></i> Vai
+                    </a>
+                </div>
+            </div>
+
+            <!-- Ordini -->
+            <div class="col-md-6 col-lg-4">
+                <div class="module-card">
+                    <div class="module-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <h3>Ordini</h3>
+                    <p>Gestisci ordini e stato lavorazioni</p>
+                    <a href="@Url.Action("Index", "Ordini")" class="btn btn-warning">
+                        <i class="fas fa-arrow-right"></i> Vai
+                    </a>
+                </div>
+            </div>
+
+            <!-- Commesse -->
+            <div class="col-md-6 col-lg-4">
+                <div class="module-card">
+                    <div class="module-icon">
+                        <i class="fas fa-project-diagram"></i>
+                    </div>
+                    <h3>Commesse</h3>
+                    <p>Pianifica e monitora le commesse</p>
+                    <a href="@Url.Action("Index", "Commesse")" class="btn btn-info">
+                        <i class="fas fa-arrow-right"></i> Vai
+                    </a>
+                </div>
+            </div>
+
+            <!-- Reports -->
+            <div class="col-md-6 col-lg-4">
+                <div class="module-card">
+                    <div class="module-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h3>Reports</h3>
+                    <p>Analisi e statistiche di vendita</p>
+                    <a href="#" class="btn btn-secondary">
+                        <i class="fas fa-arrow-right"></i> Vai
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistiche veloci -->
+    <div class="quick-stats mt-5">
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="stat-card text-center">
+                    <i class="fas fa-file-invoice-dollar stat-icon text-success"></i>
+                    <h4>0</h4>
+                    <p>Preventivi Aperti</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card text-center">
+                    <i class="fas fa-clock stat-icon text-warning"></i>
+                    <h4>0</h4>
+                    <p>Ordini in Lavorazione</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card text-center">
+                    <i class="fas fa-check-circle stat-icon text-info"></i>
+                    <h4>0</h4>
+                    <p>Commesse Attive</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card text-center">
+                    <i class="fas fa-euro-sign stat-icon text-primary"></i>
+                    <h4>€0</h4>
+                    <p>Fatturato Mese</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,71 @@
+@model WeeSe.Models.ViewModels.LoginViewModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - WeeSe Configuratore</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body class="login-body">
+    <div class="login-container">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-6 col-lg-4">
+                    <div class="login-card">
+                        <div class="login-header">
+                            <i class="fas fa-building"></i>
+                            <h2>WeeSe</h2>
+                            <p class="text-muted">Configuratore Vetrate Professionale</p>
+                        </div>
+                        
+                        <form asp-action="Login" method="post">
+                            <div asp-validation-summary="All" class="text-danger mb-3"></div>
+                            
+                            <div class="mb-3">
+                                <label asp-for="Email" class="form-label">Nome Utente</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                    <input asp-for="Email" class="form-control" placeholder="Inserisci il nome utente" />
+                                </div>
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label asp-for="Password" class="form-label">Password</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                    <input asp-for="Password" class="form-control" placeholder="Inserisci la password" />
+                                </div>
+                                <span asp-validation-for="Password" class="text-danger"></span>
+                            </div>
+                            
+                            <div class="mb-3 form-check">
+                                <input asp-for="RememberMe" class="form-check-input" />
+                                <label asp-for="RememberMe" class="form-check-label">Ricordami</label>
+                            </div>
+                            
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-sign-in-alt"></i> Vai
+                                </button>
+                            </div>
+                        </form>
+                        
+                        <div class="mt-3 text-center">
+                            <small class="text-muted">
+                                <a href="/Account/TestDb" target="_blank">Test Connessione DB</a>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

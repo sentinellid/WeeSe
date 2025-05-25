@@ -11,7 +11,7 @@ namespace WeeSe.Data
 
         // Tabella di autenticazione esistente
         public DbSet<AnagraficaAccesso> AnagraficaAccesso { get; set; }
-
+        public DbSet<Preventivo> Preventivi { get; set; }
         // Qui aggiungerai le tue altre tabelle esistenti del progetto
         // public DbSet<Cliente> Clienti { get; set; }
         // public DbSet<Prodotto> Prodotti { get; set; }

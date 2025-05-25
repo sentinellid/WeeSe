@@ -1,0 +1,370 @@
+﻿@model WeeSe.Models.Preventivo
+@{
+    ViewData["Title"] = "Nuovo Preventivo";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3"><i class="fas fa-calculator text-primary"></i> Nuovo Preventivo</h1>
+                <a asp-action="Index" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Torna all'elenco
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <form asp-action="Create" method="post" class="preventivo-form">
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+        <!-- Header del preventivo -->
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-building"></i> Sistema tutto vetro WeeSe scorrevole</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="Cliente" class="form-label required"></label>
+                            <input asp-for="Cliente" class="form-control" placeholder="Nome del cliente" />
+                            <span asp-validation-for="Cliente" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Indirizzo" class="form-label"></label>
+                            <textarea asp-for="Indirizzo" class="form-control" rows="2" placeholder="Indirizzo completo"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Data" class="form-label"></label>
+                            <input asp-for="Data" class="form-control" type="date" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="Venditore" class="form-label"></label>
+                            <input asp-for="Venditore" class="form-control" />
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="NumeroPreventivo" class="form-label"></label>
+                            <input asp-for="NumeroPreventivo" class="form-control" readonly />
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="RiferimentoOrdine" class="form-label"></label>
+                            <input asp-for="RiferimentoOrdine" class="form-control" placeholder="Riferimento ordine" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dimensioni finite -->
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="fas fa-ruler-combined"></i> Dimensioni Finite</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="dimension-group">
+                            <h6 class="text-muted mb-3">Dimensione finita 1</h6>
+                            <div class="mb-3">
+                                <label asp-for="Dimensione1_Larghezza" class="form-label">Larghezza L mm</label>
+                                <input asp-for="Dimensione1_Larghezza" class="form-control" type="number" />
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="Dimensione1_Altezza" class="form-label">Altezza H mm</label>
+                                <input asp-for="Dimensione1_Altezza" class="form-control" type="number" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="dimension-group">
+                            <h6 class="text-muted mb-3">Dimensione finita 2</h6>
+                            <div class="mb-3">
+                                <label asp-for="Dimensione2_Larghezza" class="form-label">Larghezza L mm</label>
+                                <input asp-for="Dimensione2_Larghezza" class="form-control" type="number" />
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="Dimensione2_Altezza" class="form-label">Altezza H mm</label>
+                                <input asp-for="Dimensione2_Altezza" class="form-control" type="number" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="dimension-group">
+                            <h6 class="text-muted mb-3">Dimensione finita 3</h6>
+                            <div class="mb-3">
+                                <label asp-for="Dimensione3_Larghezza" class="form-label">Larghezza L mm</label>
+                                <input asp-for="Dimensione3_Larghezza" class="form-control" type="number" />
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="Dimensione3_Altezza" class="form-label">Altezza H mm</label>
+                                <input asp-for="Dimensione3_Altezza" class="form-control" type="number" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Configurazione prodotto -->
+        <div class="row">
+            <div class="col-md-6">
+                <!-- Finitura e Vetro -->
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="fas fa-palette"></i> Finitura e Vetro</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label asp-for="Finitura" class="form-label">Finitura</label>
+                            <select asp-for="Finitura" class="form-select">
+                                <option value="">Seleziona finitura...</option>
+                                <option value="bianco 9010">bianco 9010</option>
+                                <option value="avorio 1013">avorio 1013</option>
+                                <option value="marrone 8017">marrone 8017</option>
+                                <option value="ox argento">ox argento</option>
+                                <option value="antracite DK-702">antracite DK-702</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Vetro" class="form-label">Vetro</label>
+                            <select asp-for="Vetro" class="form-select">
+                                <option value="">Seleziona vetro...</option>
+                                <option value="temp. 10mm">temp. 10mm</option>
+                                <option value="55.2 stratificato">55.2 stratificato</option>
+                                <option value="55.2 temp/ingl">55.2 temp/ingl</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="FinituraVetro" class="form-label">Finitura vetro</label>
+                            <select asp-for="FinituraVetro" class="form-select">
+                                <option value="">Seleziona finitura vetro...</option>
+                                <option value="chiaro">chiaro</option>
+                                <option value="extra chiaro">extra chiaro</option>
+                                <option value="fumé">fumé</option>
+                                <option value="satinato">satinato</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sistema di chiusura -->
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-header bg-warning">
+                        <h5 class="mb-0"><i class="fas fa-lock"></i> Sistema di Chiusura</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label asp-for="NumeroVie" class="form-label">Numero vie</label>
+                            <select asp-for="NumeroVie" class="form-select">
+                                <option value="2">2vie</option>
+                                <option value="3">3vie</option>
+                                <option value="4">4vie</option>
+                                <option value="5">5vie</option>
+                                <option value="6">6vie</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="SistemaChiusura" class="form-label">Sistema di chiusura</label>
+                            <select asp-for="SistemaChiusura" class="form-select">
+                                <option value="">Seleziona sistema...</option>
+                                <option value="paletto">paletto</option>
+                                <option value="pedalina">pedalina</option>
+                                <option value="blocco pedalina">blocco pedalina</option>
+                                <option value="serratura">serratura</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <!-- Configurazione aperture -->
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="mb-0"><i class="fas fa-arrows-alt-h"></i> Configurazione Aperture</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <label class="form-label">Sinistra</label>
+                                <div class="aperture-box">
+                                    <div class="aperture-option">
+                                        <input type="radio" asp-for="ConfigurazioneSinistra" value="fisso-scorrevole" id="sin_1" />
+                                        <label for="sin_1">Fisso + Scorrevole</label>
+                                    </div>
+                                    <div class="aperture-option">
+                                        <input type="radio" asp-for="ConfigurazioneSinistra" value="scorrevole-fisso" id="sin_2" />
+                                        <label for="sin_2">Scorrevole + Fisso</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label">Destra</label>
+                                <div class="aperture-box">
+                                    <div class="aperture-option">
+                                        <input type="radio" asp-for="ConfigurazioneDestra" value="fisso-scorrevole" id="des_1" />
+                                        <label for="des_1">Fisso + Scorrevole</label>
+                                    </div>
+                                    <div class="aperture-option">
+                                        <input type="radio" asp-for="ConfigurazioneDestra" value="scorrevole-fisso" id="des_2" />
+                                        <label for="des_2">Scorrevole + Fisso</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Apertura centrale</label>
+                            <div class="aperture-box">
+                                <div class="aperture-option">
+                                    <input type="radio" asp-for="AperturaCentrale" value="doppia" id="centr_1" />
+                                    <label for="centr_1">Doppia</label>
+                                </div>
+                                <div class="aperture-option">
+                                    <input type="radio" asp-for="AperturaCentrale" value="singola" id="centr_2" />
+                                    <label for="centr_2">Singola</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Accessori -->
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-header" style="background: linear-gradient(45deg, #6f42c1, #e83e8c); color: white;">
+                        <h5 class="mb-0"><i class="fas fa-cogs"></i> Accessori</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label asp-for="VaschettaTrascinamento" class="form-label">Vaschetta di trascinamento</label>
+                            <select asp-for="VaschettaTrascinamento" class="form-select">
+                                <option value="">Seleziona vaschetta...</option>
+                                <option value="adesiva trasparente singola">adesiva trasparente - singola</option>
+                                <option value="adesiva trasparente doppia">adesiva trasparente - doppia</option>
+                                <option value="acciaio doppia">acciaio - doppia</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Tappo" class="form-label">Tappo</label>
+                            <select asp-for="Tappo" class="form-select">
+                                <option value="">Seleziona tappo...</option>
+                                <option value="metallo">metallo</option>
+                                <option value="stillicidio">stillicidio</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="TrasportoImballo" class="form-label">Trasporto e imballo</label>
+                            <select asp-for="TrasportoImballo" class="form-select">
+                                <option value="">Seleziona trasporto...</option>
+                                <option value="ritiro presso ns sede">ritiro presso ns sede</option>
+                                <option value="spedizione con cavalletto">spedizione con cavalletto</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Note -->
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0"><i class="fas fa-sticky-note"></i> Note</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <textarea asp-for="Note" class="form-control" rows="6" placeholder="Note aggiuntive, specifiche tecniche, richieste particolari..."></textarea>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="signature-area">
+                            <label class="form-label">Firma per accettazione</label>
+                            <div class="signature-box border rounded p-3" style="height: 120px; background: #f8f9fa;">
+                                <small class="text-muted">Area riservata alla firma del cliente</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottoni di azione -->
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <a asp-action="Index" class="btn btn-outline-secondary me-2">
+                            <i class="fas fa-times"></i> Annulla
+                        </a>
+                    </div>
+                    <div>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> Salva Preventivo
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Styles {
+    <style>
+        .required::after {
+            content: " *";
+            color: #dc3545;
+        }
+
+        .dimension-group {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+            height: 100%;
+        }
+
+        .aperture-box {
+            background: white;
+            padding: 0.5rem;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+        }
+
+        .aperture-option {
+            margin-bottom: 0.5rem;
+        }
+
+            .aperture-option:last-child {
+                margin-bottom: 0;
+            }
+
+            .aperture-option input[type="radio"] {
+                margin-right: 0.5rem;
+            }
+
+        .card {
+            border: none;
+            border-radius: 12px;
+        }
+
+        .card-header {
+            border-radius: 12px 12px 0 0 !important;
+        }
+
+        .form-control, .form-select {
+            border-radius: 8px;
+        }
+
+        .btn {
+            border-radius: 8px;
+        }
+
+        .signature-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed #dee2e6 !important;
+        }
+    </style>
+}

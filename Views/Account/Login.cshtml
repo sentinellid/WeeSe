@@ -9,63 +9,191 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login - WeeSe Configuratore</title>
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* CSS incorporato solo per questa pagina */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-header i {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .login-header h2 {
+            color: #333;
+            font-weight: 700;
+            margin-bottom: 10px;
+            font-size: 2rem;
+        }
+
+        .login-header p {
+            color: #666;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .input-group-text {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            color: #667eea;
+            border-right: none;
+        }
+
+        .form-control {
+            border: 1px solid #dee2e6;
+            border-left: none;
+            padding: 12px 15px;
+            font-size: 1rem;
+            background: #fff;
+            color: #333;
+        }
+
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+            background: #fff;
+            border-left: 1px solid #667eea;
+        }
+
+        .input-group:focus-within .input-group-text {
+            border-color: #667eea;
+            background: #e3f2fd;
+        }
+
+        .form-check-label {
+            color: #333;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 12px;
+            font-weight: 600;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            background: linear-gradient(135deg, #5a6fd8 0%, #6a4c93 100%);
+        }
+
+        .text-danger {
+            font-size: 0.875rem;
+            margin-top: 5px;
+        }
+
+        .validation-summary-errors ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: #5a6fd8;
+            text-decoration: underline;
+        }
+
+
+    </style>
 </head>
-<body class="login-body">
+<body>
     <div class="login-container">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-md-6 col-lg-4">
-                    <div class="login-card">
-                        <div class="login-header">
-                            <i class="fas fa-building"></i>
-                            <h2>WeeSe</h2>
-                            <p class="text-muted">Configuratore Vetrate Professionale</p>
-                        </div>
-                        
-                        <form asp-action="Login" method="post">
-                            <div asp-validation-summary="All" class="text-danger mb-3"></div>
-                            
-                            <div class="mb-3">
-                                <label asp-for="Email" class="form-label">Nome Utente</label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="fas fa-user"></i></span>
-                                    <input asp-for="Email" class="form-control" placeholder="Inserisci il nome utente" />
-                                </div>
-                                <span asp-validation-for="Email" class="text-danger"></span>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label asp-for="Password" class="form-label">Password</label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                                    <input asp-for="Password" class="form-control" placeholder="Inserisci la password" />
-                                </div>
-                                <span asp-validation-for="Password" class="text-danger"></span>
-                            </div>
-                            
-                            <div class="mb-3 form-check">
-                                <input asp-for="RememberMe" class="form-check-input" />
-                                <label asp-for="RememberMe" class="form-check-label">Ricordami</label>
-                            </div>
-                            
-                            <div class="d-grid">
-                                <button type="submit" class="btn btn-primary btn-lg">
-                                    <i class="fas fa-sign-in-alt"></i> Vai
-                                </button>
-                            </div>
-                        </form>
-                        
-                        <div class="mt-3 text-center">
-                            <small class="text-muted">
-                                <a href="/Account/TestDb" target="_blank">Test Connessione DB</a>
-                            </small>
-                        </div>
+        <div class="login-card">
+            <div class="login-header">
+                <i class="fas fa-building"></i>
+                <h2>WeeSe</h2>
+                <p class="text-muted">Configuratore Vetrate Professionale</p>
+            </div>
+            
+            <form asp-action="Login" method="post">
+                <div asp-validation-summary="All" class="text-danger mb-3"></div>
+                
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label">Nome Utente</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                        <input asp-for="Email" class="form-control" placeholder="Inserisci il nome utente" autocomplete="username" />
                     </div>
+                    <span asp-validation-for="Email" class="text-danger"></span>
                 </div>
+                
+                <div class="mb-3">
+                    <label asp-for="Password" class="form-label">Password</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                        <input asp-for="Password" class="form-control" placeholder="Inserisci la password" autocomplete="current-password" />
+                    </div>
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+                
+                <div class="mb-3 form-check">
+                    <input asp-for="RememberMe" class="form-check-input" />
+                    <label asp-for="RememberMe" class="form-check-label">Ricordami</label>
+                </div>
+                
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="fas fa-sign-in-alt"></i> Accedi
+                    </button>
+                </div>
+            </form>
+            
+            <div class="mt-3 text-center">
+                <small class="text-muted">
+                    <a href="/Account/TestDb" target="_blank">Test Connessione DB</a>
+                </small>
             </div>
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation/1.19.5/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
 </body>
 </html>

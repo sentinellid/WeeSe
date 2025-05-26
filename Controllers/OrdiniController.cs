@@ -433,7 +433,7 @@ namespace WeeSe.Controllers
                 .ToListAsync();
 
             var preventivi = await _context.Preventivi
-                .Where(p => p.Stato == StatoPreventivo.Approvato || p.Stato == StatoPreventivo.Confermato)
+                .Where(p => p.Stato == StatoPreventivo.Confermato)
                 .Select(p => new Preventivo { Id = p.Id, NumeroPreventivo = p.NumeroPreventivo, Cliente = p.Cliente })
                 .ToListAsync();
 

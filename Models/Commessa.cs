@@ -81,6 +81,8 @@ namespace WeeSe.Models
         public DateTime? UpdatedAt { get; set; }
         public string? UpdatedBy { get; set; }
 
+        public int OrdineId { get; set; }
+
         // Navigation Properties
         public virtual ICollection<AttivitaCommessa> Attivita { get; set; } = new List<AttivitaCommessa>();
         public virtual ICollection<Ordine> Ordini { get; set; } = new List<Ordine>();

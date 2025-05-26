@@ -3,7 +3,6 @@
     ViewData["Title"] = "Modifica Preventivo";
 }
 
-<!-- Stesso contenuto di Create.cshtml, solo con titolo e action diversi -->
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
@@ -17,6 +16,7 @@
     </div>
 
     <form asp-action="Edit" method="post" class="preventivo-form">
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
         <input type="hidden" asp-for="Id" />
 
         <!-- Header del preventivo -->
@@ -127,7 +127,7 @@
                                 <option value="">Seleziona finitura...</option>
                                 @foreach (var finitura in Model.FinitureDisponibili)
                                 {
-                                    <option value="@finitura">@finitura</option>
+                                    <option value="@finitura" selected="@(Model.Finitura == finitura)">@finitura</option>
                                 }
                             </select>
                         </div>
@@ -137,7 +137,7 @@
                                 <option value="">Seleziona vetro...</option>
                                 @foreach (var vetro in Model.VetriDisponibili)
                                 {
-                                    <option value="@vetro">@vetro</option>
+                                    <option value="@vetro" selected="@(Model.Vetro == vetro)">@vetro</option>
                                 }
                             </select>
                         </div>
@@ -147,7 +147,7 @@
                                 <option value="">Seleziona finitura vetro...</option>
                                 @foreach (var finituraVetro in Model.FinitureVetroDisponibili)
                                 {
-                                    <option value="@finituraVetro">@finituraVetro</option>
+                                    <option value="@finituraVetro" selected="@(Model.FinituraVetro == finituraVetro)">@finituraVetro</option>
                                 }
                             </select>
                         </div>
@@ -163,11 +163,11 @@
                         <div class="mb-3">
                             <label asp-for="NumeroVie" class="form-label">Numero vie</label>
                             <select asp-for="NumeroVie" class="form-select">
-                                <option value="2">2 vie</option>
-                                <option value="3">3 vie</option>
-                                <option value="4">4 vie</option>
-                                <option value="5">5 vie</option>
-                                <option value="6">6 vie</option>
+                                <option value="2" selected="@(Model.NumeroVie == 2)">2 vie</option>
+                                <option value="3" selected="@(Model.NumeroVie == 3)">3 vie</option>
+                                <option value="4" selected="@(Model.NumeroVie == 4)">4 vie</option>
+                                <option value="5" selected="@(Model.NumeroVie == 5)">5 vie</option>
+                                <option value="6" selected="@(Model.NumeroVie == 6)">6 vie</option>
                             </select>
                         </div>
                         <div class="mb-3">
@@ -176,7 +176,7 @@
                                 <option value="">Seleziona sistema...</option>
                                 @foreach (var sistema in Model.SistemiChiusuraDisponibili)
                                 {
-                                    <option value="@sistema">@sistema</option>
+                                    <option value="@sistema" selected="@(Model.SistemaChiusura == sistema)">@sistema</option>
                                 }
                             </select>
                         </div>
@@ -247,7 +247,7 @@
                                 <option value="">Seleziona vaschetta...</option>
                                 @foreach (var vaschetta in Model.VaschetteTrascinamentoDisponibili)
                                 {
-                                    <option value="@vaschetta">@vaschetta</option>
+                                    <option value="@vaschetta" selected="@(Model.VaschettaTrascinamento == vaschetta)">@vaschetta</option>
                                 }
                             </select>
                         </div>
@@ -257,7 +257,7 @@
                                 <option value="">Seleziona tappo...</option>
                                 @foreach (var tappo in Model.TappiDisponibili)
                                 {
-                                    <option value="@tappo">@tappo</option>
+                                    <option value="@tappo" selected="@(Model.Tappo == tappo)">@tappo</option>
                                 }
                             </select>
                         </div>
@@ -267,7 +267,7 @@
                                 <option value="">Seleziona trasporto...</option>
                                 @foreach (var trasporto in Model.TrasportiDisponibili)
                                 {
-                                    <option value="@trasporto">@trasporto</option>
+                                    <option value="@trasporto" selected="@(Model.TrasportoImballo == trasporto)">@trasporto</option>
                                 }
                             </select>
                         </div>
@@ -276,22 +276,47 @@
             </div>
         </div>
 
-        <!-- Note -->
-        <div class="card mb-4 shadow-sm">
-            <div class="card-header bg-dark text-white">
-                <h5 class="mb-0"><i class="fas fa-sticky-note"></i> Note</h5>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-8">
+        <!-- ✅ STATO E NOTE -->
+        <div class="row">
+            <div class="col-md-8">
+                <!-- Note -->
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-header bg-dark text-white">
+                        <h5 class="mb-0"><i class="fas fa-sticky-note"></i> Note</h5>
+                    </div>
+                    <div class="card-body">
                         <textarea asp-for="Note" class="form-control" rows="6" placeholder="Note aggiuntive, specifiche tecniche, richieste particolari..."></textarea>
                     </div>
-                    <div class="col-md-4">
-                        <div class="signature-area">
-                            <label class="form-label">Firma per accettazione</label>
-                            <div class="signature-box border rounded p-3" style="height: 120px; background: #f8f9fa;">
-                                <small class="text-muted">Area riservata alla firma del cliente</small>
-                            </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <!-- ✅ STATO PREVENTIVO -->
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="fas fa-flag"></i> Stato Preventivo</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label asp-for="Stato" class="form-label">Stato attuale</label>
+                            <select asp-for="Stato" class="form-select">
+                                @foreach (var stato in Enum.GetValues<StatoPreventivo>())
+                                {
+                                    <option value="@stato" selected="@(Model.Stato == stato)">
+                                        @stato.ToString()
+                                    </option>
+                                }
+                            </select>
+                            <span asp-validation-for="Stato" class="text-danger"></span>
+                        </div>
+
+                        <!-- Info stato -->
+                        <div class="stato-info mt-3">
+                            <small class="text-muted">
+                                <strong>Stato corrente:</strong>
+                                <span class="badge @GetStatoBadgeClass(Model.Stato) ms-1">
+                                    @Model.Stato.ToString()
+                                </span>
+                            </small>
                         </div>
                     </div>
                 </div>
@@ -306,10 +331,13 @@
                         <a asp-action="Index" class="btn btn-outline-secondary me-2">
                             <i class="fas fa-times"></i> Annulla
                         </a>
+                        <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-info">
+                            <i class="fas fa-eye"></i> Visualizza
+                        </a>
                     </div>
                     <div>
                         <button type="submit" class="btn btn-success">
-                            <i class="fas fa-save"></i> Salva Preventivo
+                            <i class="fas fa-save"></i> Salva Modifiche
                         </button>
                     </div>
                 </div>
@@ -369,17 +397,17 @@
             border-radius: 8px;
         }
 
-        .signature-box {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 2px dashed #dee2e6 !important;
-        }
-
         .area-display {
             background: #e9ecef;
             font-weight: bold;
             color: #495057;
+        }
+
+        .stato-info {
+            padding: 0.75rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #007bff;
         }
     </style>
 }
@@ -461,6 +489,42 @@
             $('.dimension-row').each(function() {
                 calcolaArea($(this));
             });
+
+            // ✅ Aggiorna badge stato quando cambia la selezione
+            $('select[name="Stato"]').change(function() {
+                const statoSelezionato = $(this).val();
+                const badgeClass = getBadgeClass(statoSelezionato);
+                $('.stato-info .badge').removeClass('bg-secondary bg-primary bg-success bg-danger bg-warning bg-info bg-dark')
+                                       .addClass(badgeClass.replace('badge ', ''))
+                                       .text(statoSelezionato);
+            });
         });
+
+        // ✅ Funzione per determinare la classe del badge
+        function getBadgeClass(stato) {
+            switch(stato) {
+                case 'Bozza': return 'badge bg-secondary';
+                case 'Inviato': return 'badge bg-primary';
+                case 'Approvato': return 'badge bg-success';
+                case 'Rifiutato': return 'badge bg-danger';
+                case 'Confermato': return 'badge bg-info';
+                case 'Annullato': return 'badge bg-dark';
+                default: return 'badge bg-secondary';
+            }
+        }
     </script>
 }
+
+@functions {
+    string GetStatoBadgeClass(StatoPreventivo stato)
+    {
+        return stato switch
+        {
+            StatoPreventivo.Bozza => "badge bg-secondary",
+            StatoPreventivo.Confermato => "badge bg-info",
+            StatoPreventivo.Annullato => "badge bg-dark",
+            _ => "badge bg-secondary"
+        };
+    }
+}
+

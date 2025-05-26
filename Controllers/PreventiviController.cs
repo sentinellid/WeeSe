@@ -304,5 +304,197 @@ namespace WeeSe.Controllers
         {
             return $"PRV-{DateTime.Now:yyyyMMdd}-{DateTime.Now.Ticks.ToString()[^6..]}";
         }
+
+        // ================================
+        // 🎯 ACTION PER ACCETTARE PREVENTIVO
+        // ================================
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Accetta(int id)
+        {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
+            {
+                // 1️⃣ Trova e verifica preventivo
+                var preventivo = await _context.Preventivi
+                    .Include(p => p.Cliente)
+                    .FirstOrDefaultAsync(p => p.Id == id);
+
+                if (preventivo == null)
+                    return Json(new { success = false, error = "Preventivo non trovato" });
+
+                // 2️⃣ Aggiorna preventivo
+                preventivo.Stato = StatoPreventivo.Confermato;
+                preventivo.UpdatedBy = User.Identity?.Name;
+                preventivo.UpdatedAt = DateTime.Now;
+
+                // 3️⃣ 🚀 CREA ORDINE AUTOMATICAMENTE
+                var numeroOrdine = await GeneraNumeroOrdineAsync();
+                var ordine = new Ordine
+                {
+                    PreventivoId = preventivo.Id,
+                    NumeroOrdine = numeroOrdine,
+                    Cliente = preventivo.Cliente,
+                    //IndirizzoSpedizione = preventivo.Cliente.,
+                    Descrizione = $"Ordine generato da preventivo {preventivo.NumeroPreventivo}",
+                    DataOrdine = DateTime.Now,
+                    DataConsegnaRichiesta = DateTime.Now.AddDays(15), // Default 15 giorni
+                    Stato = StatoOrdine.Confermato, // 🎯 STATO INIZIALE
+                    Priorita = PrioritaOrdine.Media,
+                    ImportoTotale = preventivo.ImportoTotale,
+                    Responsabile = User.Identity?.Name,
+                    Note = $"Generato automaticamente dal preventivo {preventivo.NumeroPreventivo}",
+                    CreatedBy = User.Identity?.Name,
+                    CreatedAt = DateTime.Now
+                };
+
+                _context.Ordini.Add(ordine);
+                await _context.SaveChangesAsync(); // 💾 Salva per ottenere ordine.Id
+
+                // 4️⃣ 🚀 CREA COMMESSA AUTOMATICAMENTE  
+                var numeroCommessa = await GeneraNumeroCommessaAsync();
+                var commessa = new Commessa
+                {
+                    OrdineId = ordine.Id, // 🔗 Link all'ordine
+                    PreventivoId = preventivo.Id, // 🔗 Link al preventivo
+                    NumeroCommessa = numeroCommessa,
+                    Descrizione = $"Commessa per ordine {ordine.NumeroOrdine}",
+                    DataInizio = DateTime.Now,
+                    DataFinePrevista = DateTime.Now.AddDays(10), // Default 10 giorni lavorazione
+                    Stato = StatoCommessa.Nuova, // 🎯 STATO INIZIALE
+                    Priorita = PrioritaCommessa.Media,
+                    ImportoTotale = preventivo.ImportoTotale,
+                    Responsabile = User.Identity?.Name,
+                    Note = $"Generata automaticamente dall'ordine {ordine.NumeroOrdine}",
+                    CreatedBy = User.Identity?.Name,
+                    CreatedAt = DateTime.Now
+                };
+
+                _context.Commesse.Add(commessa);
+
+                // 5️⃣ 💾 SALVA TUTTO
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                // 6️⃣ 📝 LOG
+                _logger?.LogInformation("✅ Preventivo {PreventivoId} accettato. Creati Ordine {OrdineId} e Commessa {CommessaId}",
+                    preventivo.Id, ordine.Id, commessa.Id);
+
+                // 7️⃣ 🎉 RISPOSTA JSON
+                return Json(new
+                {
+                    success = true,
+                    message = "Preventivo accettato con successo!",
+                    numeroOrdine = numeroOrdine,
+                    numeroCommessa = numeroCommessa,
+                    ordineId = ordine.Id,
+                    commessaId = commessa.Id,
+                    redirectUrl = Url.Action("Details", "Ordini", new { id = ordine.Id })
+                });
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                _logger?.LogError(ex, "❌ Errore durante l'accettazione del preventivo {Id}", id);
+                return Json(new
+                {
+                    success = false,
+                    error = $"Errore durante l'accettazione: {ex.Message}"
+                });
+            }
+        }
+
+        // ================================
+        // 🎯 ACTION PER CAMBIO STATO NORMALE
+        // ================================
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangeStatus(int id, StatoPreventivo nuovoStato)
+        {
+            try
+            {
+                var preventivo = await _context.Preventivi.FindAsync(id);
+
+                if (preventivo == null)
+                    return Json(new { success = false, error = "Preventivo non trovato" });
+
+                // Validazioni cambio stato
+                if (!IsValidStateTransition(preventivo.Stato, nuovoStato))
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        error = $"Cambio stato non valido da {preventivo.Stato} a {nuovoStato}"
+                    });
+                }
+
+                // Aggiorna stato
+                preventivo.Stato = nuovoStato;
+                preventivo.UpdatedBy = User.Identity?.Name;
+                preventivo.UpdatedAt = DateTime.Now;
+
+                // Date specifiche per alcuni stati
+
+                preventivo.Data = DateTime.Now;
+
+                await _context.SaveChangesAsync();
+
+                _logger?.LogInformation("Stato preventivo {PreventivoId} cambiato da {StatoVecchio} a {StatoNuovo}",
+                    id, preventivo.Stato, nuovoStato);
+
+                return Json(new
+                {
+                    success = true,
+                    message = $"Stato aggiornato a: {nuovoStato}",
+                    nuovoStato = nuovoStato.ToString()
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex, "Errore durante il cambio stato preventivo {Id}", id);
+                return Json(new
+                {
+                    success = false,
+                    error = $"Errore durante il cambio stato: {ex.Message}"
+                });
+            }
+        }
+
+        // ================================
+        // 🛠️ METODI HELPER
+        // ================================
+        private async Task<string> GeneraNumeroOrdineAsync()
+        {
+            var anno = DateTime.Now.Year;
+            var ultimoNumero = await _context.Ordini
+                .Where(o => o.NumeroOrdine.StartsWith($"ORD-{anno}"))
+                .CountAsync();
+            return $"ORD-{anno}-{(ultimoNumero + 1):D3}";
+        }
+
+        private async Task<string> GeneraNumeroCommessaAsync()
+        {
+            var anno = DateTime.Now.Year;
+            var ultimoNumero = await _context.Commesse
+                .Where(c => c.NumeroCommessa.StartsWith($"COM-{anno}"))
+                .CountAsync();
+            return $"COM-{anno}-{(ultimoNumero + 1):D3}";
+        }
+
+        private static bool IsValidStateTransition(StatoPreventivo statoCorrente, StatoPreventivo nuovoStato)
+        {
+            return statoCorrente switch
+            {
+                // Da BOZZA puoi andare a CONFERMATO o ANNULLATO
+                StatoPreventivo.Bozza => nuovoStato is StatoPreventivo.Confermato or StatoPreventivo.Annullato,
+
+                // Stati finali - NON possono più cambiare
+                StatoPreventivo.Confermato => false,
+                StatoPreventivo.Annullato => false,
+
+                _ => false
+            };
+        }
     }
 }

@@ -109,6 +109,8 @@ namespace WeeSe.Models
         public decimal AreaTotale => Dimensioni?.Sum(d => d.Area) ?? 0;
         public int NumeroDimensioni => Dimensioni?.Count ?? 0;
 
+        public decimal ImportoTotale;
+
         // Calcolo automatico dei totali
         public void CalcolaTotali()
         {
@@ -122,9 +124,6 @@ namespace WeeSe.Models
     public enum StatoPreventivo
     {
         Bozza,
-        Inviato,
-        Approvato,
-        Rifiutato,    // ← Questo invece di "Respinto"
         Confermato,
         Annullato     // ← Questo invece di "Scaduto"
     }

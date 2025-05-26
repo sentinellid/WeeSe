@@ -1,0 +1,49 @@
+﻿@model WeeSe.Models.Ordine
+@{
+    ViewData["Title"] = "Elimina Ordine";
+}
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-exclamation-triangle"></i> 
+                        Conferma Eliminazione
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <strong>Attenzione!</strong> Stai per eliminare definitivamente questo ordine.
+                        Questa operazione non può essere annullata.
+                    </div>
+
+                    <dl class="row">
+                        <dt class="col-sm-4">Numero Ordine:</dt>
+                        <dd class="col-sm-8">@Model.NumeroOrdine</dd>
+
+                        <dt class="col-sm-4">Cliente:</dt>
+                        <dd class="col-sm-8">@Model.Cliente</dd>
+
+                        <dt class="col-sm-4">Data Ordine:</dt>
+                        <dd class="col-sm-8">@Model.DataOrdine.ToString("dd/MM/yyyy")</dd>
+
+                        <dt class="col-sm-4">Importo:</dt>
+                        <dd class="col-sm-8">€ @Model.ImportoTotale.ToString("N2")</dd>
+                    </dl>
+
+                    <form asp-action="Delete" method="post" class="d-flex justify-content-end gap-2">
+                        <input asp-for="Id" type="hidden" />
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Annulla
+                        </a>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> Conferma Eliminazione
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

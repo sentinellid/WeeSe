@@ -1,0 +1,584 @@
+﻿@model WeeSe.Models.ViewModels.CommesseIndexViewModel
+@using WeeSe.Extensions
+@{
+    ViewData["Title"] = "Gestione Commesse";
+}
+
+<div class="commesse-container">
+    <!-- Header con statistiche rapide -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h1 class="h3 mb-0">
+                        <i class="fas fa-project-diagram text-primary"></i> 
+                        Gestione Commesse
+                    </h1>
+                    <small class="text-muted">Totale: @Model.TotalCount commesse</small>
+                </div>
+                <div class="d-flex gap-2">
+                    <a asp-action="Dashboard" class="btn btn-outline-info">
+                        <i class="fas fa-chart-pie"></i> Dashboard
+                    </a>
+                    <a asp-action="Create" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Nuova Commessa
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Statistiche rapide -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-3">
+                    <div class="stat-card bg-primary text-white">
+                        <div class="stat-icon">
+                            <i class="fas fa-tasks"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h4>@Model.StatisticheRapide.TotaleCommesse</h4>
+                            <p>Totale Commesse</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card bg-info text-white">
+                        <div class="stat-icon">
+                            <i class="fas fa-play-circle"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h4>@Model.StatisticheRapide.CommesseAttive</h4>
+                            <p>Attive</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card bg-warning text-white">
+                        <div class="stat-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h4>@Model.StatisticheRapide.CommesseInRitardo</h4>
+                            <p>In Ritardo</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card bg-danger text-white">
+                        <div class="stat-icon">
+                            <i class="fas fa-fire"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h4>@Model.StatisticheRapide.CommesseUrgenti</h4>
+                            <p>Urgenti</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtri avanzati -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-light">
+            <div class="d-flex justify-content-between align-items-center">
+                <h6 class="mb-0">
+                    <i class="fas fa-filter"></i> Filtri di Ricerca
+                </h6>
+                <button type="button" class="btn btn-sm btn-outline-secondary" id="toggleFiltri">
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+            </div>
+        </div>
+        <div class="card-body" id="filtriPanel">
+            <form method="get" class="filtri-form">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label">Ricerca</label>
+                        <input type="text" name="Filtri.SearchTerm" value="@Model.Filtri.SearchTerm" 
+                               class="form-control" placeholder="Numero, cliente, descrizione..." />
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Stato</label>
+                        <select name="Filtri.Stato" class="form-select">
+                            <option value="">Tutti</option>
+                            @foreach (var stato in Enum.GetValues<StatoCommessa>())
+                            {
+                                <option value="@stato" selected="@(Model.Filtri.Stato == stato)">
+                                    @stato.GetDisplayName()
+                                </option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Priorità</label>
+                        <select name="Filtri.Priorita" class="form-select">
+                            <option value="">Tutte</option>
+                            @foreach (var priorita in Enum.GetValues<PrioritaCommessa>())
+                            {
+                                <option value="@priorita" selected="@(Model.Filtri.Priorita == priorita)">
+                                    @priorita.GetDisplayName()
+                                </option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Responsabile</label>
+                        <input type="text" name="Filtri.Responsabile" value="@Model.Filtri.Responsabile" 
+                               class="form-control" placeholder="Nome responsabile" />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Periodo</label>
+                        <div class="input-group">
+                            <input type="date" name="Filtri.DataDal" value="@Model.Filtri.DataDal?.ToString("yyyy-MM-dd")" 
+                                   class="form-control" />
+                            <span class="input-group-text">a</span>
+                            <input type="date" name="Filtri.DataAl" value="@Model.Filtri.DataAl?.ToString("yyyy-MM-dd")" 
+                                   class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row g-3 mt-2">
+                    <div class="col-md-6">
+                        <div class="form-check-group">
+                            <div class="form-check form-check-inline">
+                                <input type="checkbox" name="Filtri.SoloInRitardo" value="true" 
+                                       @(Model.Filtri.SoloInRitardo ? "checked" : "") class="form-check-input" id="soloRitardo" />
+                                <label class="form-check-label" for="soloRitardo">
+                                    <i class="fas fa-clock text-warning"></i> Solo in ritardo
+                                </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input type="checkbox" name="Filtri.SoloUrgenti" value="true" 
+                                       @(Model.Filtri.SoloUrgenti ? "checked" : "") class="form-check-input" id="soloUrgenti" />
+                                <label class="form-check-label" for="soloUrgenti">
+                                    <i class="fas fa-fire text-danger"></i> Solo urgenti
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Ordinamento</label>
+                        <select name="Filtri.Ordinamento" class="form-select">
+                            <option value="data_desc" selected="@(Model.Filtri.Ordinamento == "data_desc")">Data ↓</option>
+                            <option value="data" selected="@(Model.Filtri.Ordinamento == "data")">Data ↑</option>
+                            <option value="numero" selected="@(Model.Filtri.Ordinamento == "numero")">Numero ↑</option>
+                            <option value="numero_desc" selected="@(Model.Filtri.Ordinamento == "numero_desc")">Numero ↓</option>
+                            <option value="cliente" selected="@(Model.Filtri.Ordinamento == "cliente")">Cliente ↑</option>
+                            <option value="priorita" selected="@(Model.Filtri.Ordinamento == "priorita")">Priorità ↓</option>
+                            <option value="scadenza" selected="@(Model.Filtri.Ordinamento == "scadenza")">Scadenza ↑</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">&nbsp;</label>
+                        <div class="d-grid">
+                            <div class="btn-group">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-search"></i> Filtra
+                                </button>
+                                <a asp-action="Index" class="btn btn-outline-secondary">
+                                    <i class="fas fa-times"></i> Reset
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Griglia commesse -->
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            @if (Model.Commesse.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 commesse-table">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 120px;">Numero</th>
+                                <th>Cliente</th>
+                                <th style="width: 120px;">Data Inizio</th>
+                                <th style="width: 120px;">Scadenza</th>
+                                <th style="width: 100px;">Stato</th>
+                                <th style="width: 80px;">Priorità</th>
+                                <th style="width: 100px;">Progresso</th>
+                                <th style="width: 120px;">Responsabile</th>
+                                <th style="width: 100px;">Importo</th>
+                                <th style="width: 140px;" class="text-end">Azioni</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var commessa in Model.Commesse)
+                            {
+                                <tr class="@(commessa.InRitardo ? "table-warning" : "")">
+                                    <td>
+                                        <a asp-action="Details" asp-route-id="@commessa.Id" 
+                                           class="fw-bold text-decoration-none commessa-link">
+                                            @commessa.NumeroCommessa
+                                        </a>
+                                        @if (commessa.Priorita == PrioritaCommessa.Urgente)
+                                        {
+                                            <i class="fas fa-fire text-danger ms-1" title="Urgente"></i>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <div class="fw-semibold">@commessa.Cliente</div>
+                                            @if (!string.IsNullOrEmpty(commessa.Descrizione))
+                                            {
+                                                <small class="text-muted">@commessa.Descrizione</small>
+                                            }
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="text-nowrap">@commessa.DataInizio.ToString("dd/MM/yyyy")</span>
+                                    </td>
+                                    <td>
+                                        @if (commessa.DataFinePrevista.HasValue)
+                                        {
+                                            <span class="text-nowrap @(commessa.InRitardo ? "text-danger fw-bold" : "")">
+                                                @commessa.DataFinePrevista.Value.ToString("dd/MM/yyyy")
+                                            </span>
+                                            @if (commessa.InRitardo)
+                                            {
+                                                <br><small class="text-danger">In ritardo</small>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Non definita</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <span class="@commessa.CssClassStato">
+                                            @commessa.Stato.GetDisplayName()
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="@commessa.CssClassPriorita">
+                                            <i class="fas @GetPrioritaIcon(commessa.Priorita)"></i>
+                                            @commessa.Priorita.GetDisplayName()
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="progress-container">
+                                            <div class="progress" style="height: 8px;">
+                                                <div class="progress-bar @GetProgressBarClass(commessa.PercentualeCompletamento)" 
+                                                     style="width: @commessa.PercentualeCompletamento%"></div>
+                                            </div>
+                                            <small class="text-muted">@commessa.PercentualeCompletamento%</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            @if (!string.IsNullOrEmpty(commessa.Responsabile))
+                                            {
+                                                <div class="fw-semibold">@commessa.Responsabile</div>
+                                            }
+                                            @if (!string.IsNullOrEmpty(commessa.TecnicoAssegnato))
+                                            {
+                                                <small class="text-muted">@commessa.TecnicoAssegnato</small>
+                                            }
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @if (commessa.ImportoTotale > 0)
+                                        {
+                                            <div class="fw-bold">@commessa.ImportoTotale.ToString("C")</div>
+                                            @if (commessa.ImportoFatturato > 0)
+                                            {
+                                                <small class="text-success">Fatt: @commessa.ImportoFatturato.ToString("C")</small>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                    <td class="text-end">
+                                        <div class="btn-group btn-group-sm">
+                                            <a asp-action="Details" asp-route-id="@commessa.Id" 
+                                               class="btn btn-outline-primary" title="Dettagli">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a asp-action="Edit" asp-route-id="@commessa.Id" 
+                                               class="btn btn-outline-secondary" title="Modifica">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <div class="btn-group" role="group">
+                                                <button type="button" class="btn btn-outline-info dropdown-toggle" 
+                                                        data-bs-toggle="dropdown" title="Cambia Stato">
+                                                    <i class="fas fa-exchange-alt"></i>
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    @foreach (var stato in Enum.GetValues<StatoCommessa>())
+                                                    {
+                                                        @if (stato != commessa.Stato)
+                                                        {
+                                                            <li>
+                                                                <a class="dropdown-item" href="#" 
+                                                                   onclick="changeStatus(@commessa.Id, '@stato')">
+                                                                    @stato.GetDisplayName()
+                                                                </a>
+                                                            </li>
+                                                        }
+                                                    }
+                                                </ul>
+                                            </div>
+                                            <button type="button" class="btn btn-outline-danger" 
+                                                    onclick="confirmDelete(@commessa.Id)" title="Elimina">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Paginazione -->
+                @if (Model.TotalPages > 1)
+                {
+                    <div class="card-footer">
+                        <nav aria-label="Paginazione commesse">
+                            <ul class="pagination justify-content-center mb-0">
+                                @if (Model.HasPreviousPage)
+                                {
+                                    <li class="page-item">
+                                        <a class="page-link" asp-action="Index" 
+                                           asp-route-Filtri.PageIndex="@(Model.Filtri.PageIndex - 1)"
+                                           asp-all-route-data="@GetRouteData(Model.Filtri)">
+                                            <i class="fas fa-chevron-left"></i> Precedente
+                                        </a>
+                                    </li>
+                                }
+
+                                @for (int i = Math.Max(1, Model.Filtri.PageIndex - 2); 
+                                      i <= Math.Min(Model.TotalPages, Model.Filtri.PageIndex + 2); i++)
+                                {
+                                    <li class="page-item @(i == Model.Filtri.PageIndex ? "active" : "")">
+                                        <a class="page-link" asp-action="Index" 
+                                           asp-route-Filtri.PageIndex="@i"
+                                           asp-all-route-data="@GetRouteData(Model.Filtri)">
+                                            @i
+                                        </a>
+                                    </li>
+                                }
+
+                                @if (Model.HasNextPage)
+                                {
+                                    <li class="page-item">
+                                        <a class="page-link" asp-action="Index" 
+                                           asp-route-Filtri.PageIndex="@(Model.Filtri.PageIndex + 1)"
+                                           asp-all-route-data="@GetRouteData(Model.Filtri)">
+                                            Successivo <i class="fas fa-chevron-right"></i>
+                                        </a>
+                                    </li>
+                                }
+                            </ul>
+                        </nav>
+                        <div class="text-center mt-2">
+                            <small class="text-muted">
+                                Pagina @Model.Filtri.PageIndex di @Model.TotalPages 
+                                (@Model.TotalCount commesse totali)
+                            </small>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="fas fa-project-diagram fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">Nessuna commessa trovata</h5>
+                    <p class="text-muted">
+                        @if (Model.Filtri.SearchTerm != null || Model.Filtri.Stato.HasValue)
+                        {
+                            <span>Prova a modificare i filtri di ricerca.</span>
+                        }
+                        else
+                        {
+                            <span>Inizia creando la tua prima commessa.</span>
+                        }
+                    </p>
+                    <a asp-action="Create" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Crea Commessa
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Toggle filtri
+        $('#toggleFiltri').click(function() {
+            $('#filtriPanel').slideToggle();
+            $(this).find('i').toggleClass('fa-chevron-down fa-chevron-up');
+        });
+
+        // Cambio stato commessa
+        function changeStatus(id, newStatus) {
+            if (confirm('Cambiare lo stato della commessa?')) {
+                $.post('@Url.Action("ChangeStatus")', { id: id, nuovoStato: newStatus })
+                    .done(function(data) {
+                        if (data.success) {
+                            location.reload();
+                        } else {
+                            alert('Errore: ' + data.error);
+                        }
+                    });
+            }
+        }
+
+        // Conferma eliminazione
+        function confirmDelete(id) {
+            if (confirm('Sei sicuro di voler eliminare questa commessa?')) {
+                var form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '@Url.Action("Delete")/' + id;
+                
+                var token = document.createElement('input');
+                token.type = 'hidden';
+                token.name = '__RequestVerificationToken';
+                token.value = $('input[name="__RequestVerificationToken"]').val();
+                form.appendChild(token);
+                
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+
+        // Auto-submit form quando cambiano i filtri rapidi
+        $('input[name="Filtri.SoloInRitardo"], input[name="Filtri.SoloUrgenti"]').change(function() {
+            $(this).closest('form').submit();
+        });
+    </script>
+}
+
+@section Styles {
+    <style>
+        .commesse-container {
+            padding: 1rem;
+        }
+
+        .stat-card {
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-right: 1rem;
+            opacity: 0.8;
+        }
+
+        .stat-content h4 {
+            margin: 0;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .stat-content p {
+            margin: 0;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .commesse-table th {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            font-weight: 600;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .commessa-link {
+            color: var(--bs-primary);
+            font-weight: 600;
+        }
+
+        .commessa-link:hover {
+            color: var(--bs-primary);
+            text-decoration: underline !important;
+        }
+
+        .progress-container {
+            width: 100%;
+        }
+
+        .progress {
+            margin-bottom: 2px;
+        }
+
+        .table-warning {
+            --bs-table-bg: rgba(255, 193, 7, 0.1);
+        }
+
+        .filtri-form .form-check-group {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            height: 38px;
+        }
+
+        .btn-group-sm .btn {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+        }
+    </style>
+}
+
+@functions {
+    string GetPrioritaIcon(PrioritaCommessa priorita) => priorita switch
+    {
+        PrioritaCommessa.Bassa => "fa-arrow-down",
+        PrioritaCommessa.Media => "fa-minus",
+        PrioritaCommessa.Alta => "fa-arrow-up",
+        PrioritaCommessa.Urgente => "fa-fire",
+        _ => "fa-minus"
+    };
+
+    string GetProgressBarClass(int percentuale)
+    {
+        if (percentuale < 25) return "bg-danger";
+        if (percentuale < 50) return "bg-warning";
+        if (percentuale < 75) return "bg-info";
+        return "bg-success";
+    }
+
+
+    Dictionary<string, string> GetRouteData(CommesseFiltriViewModel filtri)
+    {
+        var routeData = new Dictionary<string, string>();
+        
+        if (!string.IsNullOrEmpty(filtri.SearchTerm))
+            routeData["Filtri.SearchTerm"] = filtri.SearchTerm;
+        if (filtri.Stato.HasValue)
+            routeData["Filtri.Stato"] = filtri.Stato.ToString()!;
+        if (filtri.Priorita.HasValue)
+            routeData["Filtri.Priorita"] = filtri.Priorita.ToString()!;
+        if (!string.IsNullOrEmpty(filtri.Responsabile))
+            routeData["Filtri.Responsabile"] = filtri.Responsabile;
+        if (filtri.DataDal.HasValue)
+            routeData["Filtri.DataDal"] = filtri.DataDal.Value.ToString("yyyy-MM-dd");
+        if (filtri.DataAl.HasValue)
+            routeData["Filtri.DataAl"] = filtri.DataAl.Value.ToString("yyyy-MM-dd");
+        if (filtri.SoloInRitardo)
+            routeData["Filtri.SoloInRitardo"] = "true";
+        if (filtri.SoloUrgenti)
+            routeData["Filtri.SoloUrgenti"] = "true";
+        if (!string.IsNullOrEmpty(filtri.Ordinamento))
+            routeData["Filtri.Ordinamento"] = filtri.Ordinamento;
+            
+        return routeData;
+    }
+}

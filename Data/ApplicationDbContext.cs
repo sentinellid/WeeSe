@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using WeeSe.Models;
 
 namespace WeeSe.Data
@@ -11,27 +11,35 @@ namespace WeeSe.Data
 
         // Tabella di autenticazione esistente
         public DbSet<AnagraficaAccesso> AnagraficaAccesso { get; set; }
-        public DbSet<Preventivo> Preventivi { get; set; }
-        // Qui aggiungerai le tue altre tabelle esistenti del progetto
-        // public DbSet<Cliente> Clienti { get; set; }
-        // public DbSet<Prodotto> Prodotti { get; set; }
-        // public DbSet<Listino> Listini { get; set; }
-        // public DbSet<Preventivo> Preventivi { get; set; }
-        // public DbSet<Ordine> Ordini { get; set; }
-        // public DbSet<Commessa> Commesse { get; set; }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        public DbSet<Preventivo> Preventivi { get; set; } = default!;
+        public DbSet<DimensioneFinita> DimensioniFinite { get; set; } = default!;
+        public DbSet<Commessa> Commesse { get; set; }
+        public DbSet<Ordine> Ordini { get; set; }
+        public DbSet<ListinoPrezzo> ListiniPrezzi { get; set; }
+        public DbSet<AttivitaCommessa> AttivitaCommesse { get; set; }
+        protected override void OnModelCreating(ModelBuilder builder)
         {
-            base.OnModelCreating(modelBuilder);
-            
-            // Configurazione per tabella di autenticazione esistente
-            modelBuilder.Entity<AnagraficaAccesso>(entity =>
+            base.OnModelCreating(builder);
+
+            // ✅ AGGIUNGI CONFIGURAZIONE PREVENTIVI
+            builder.Entity<Preventivo>(entity =>
             {
-                entity.HasKey(e => e.IDAnagraficaAccesso);
-                entity.Property(e => e.sUtente).IsRequired().HasMaxLength(100);
-                entity.Property(e => e.sPassword).IsRequired().HasMaxLength(100);
-                entity.Property(e => e.bAttivo).HasDefaultValue(true);
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Cliente).IsRequired().HasMaxLength(200);
+                entity.Property(e => e.NumeroPreventivo).IsRequired().HasMaxLength(50);
+                entity.HasIndex(e => e.NumeroPreventivo).IsUnique();
+            });
+
+            builder.Entity<DimensioneFinita>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.HasOne(d => d.Preventivo)
+                      .WithMany(p => p.Dimensioni)
+                      .HasForeignKey(d => d.PreventivoId)
+                      .OnDelete(DeleteBehavior.Cascade);
             });
         }
+
+
     }
 }

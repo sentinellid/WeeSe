@@ -1,12 +1,17 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace WeeSe.Models
 {
+    [Table("TBL_Preventivi")]
     public class Preventivo
     {
         public int Id { get; set; }
 
-        // Header
+        [Display(Name = "Sistema tutto vetro weese scorrevole")]
+        public string SistemaDescrizione { get; set; } = "Sistema tutto vetro weese scorrevole";
+
+        // Sezione Cliente
         [Required(ErrorMessage = "Il cliente è obbligatorio")]
         [Display(Name = "Cliente")]
         public string Cliente { get; set; } = string.Empty;
@@ -27,24 +32,7 @@ namespace WeeSe.Models
         [Display(Name = "Rif. Ordine")]
         public string? RiferimentoOrdine { get; set; }
 
-        // Dimensioni (3 sezioni)
-        [Display(Name = "Dimensione 1 - Larghezza (mm)")]
-        public int? Dimensione1_Larghezza { get; set; }
-
-        [Display(Name = "Dimensione 1 - Altezza (mm)")]
-        public int? Dimensione1_Altezza { get; set; }
-
-        [Display(Name = "Dimensione 2 - Larghezza (mm)")]
-        public int? Dimensione2_Larghezza { get; set; }
-
-        [Display(Name = "Dimensione 2 - Altezza (mm)")]
-        public int? Dimensione2_Altezza { get; set; }
-
-        [Display(Name = "Dimensione 3 - Larghezza (mm)")]
-        public int? Dimensione3_Larghezza { get; set; }
-
-        [Display(Name = "Dimensione 3 - Altezza (mm)")]
-        public int? Dimensione3_Altezza { get; set; }
+        public virtual ICollection<DimensioneFinita> Dimensioni { get; set; } = new List<DimensioneFinita>();
 
         // Finitura
         [Display(Name = "Finitura")]
@@ -91,15 +79,44 @@ namespace WeeSe.Models
         [Display(Name = "Note")]
         public string? Note { get; set; }
 
+        [Display(Name = "Firma per accettazione")]
+        public string? FirmaAccettazione { get; set; }
+
         // Metadati
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public string? CreatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public string? UpdatedBy { get; set; }
 
+        // Totali
+        [Display(Name = "Subtotale")]
+        [DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = false)]
+        public decimal Subtotale { get; set; }
+
+        [Display(Name = "IVA")]
+        [DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = false)]
+        public decimal Iva { get; set; }
+
+        [Display(Name = "Totale")]
+        [DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = false)]
+        public decimal Totale { get; set; }
+
         // Stato del preventivo
         [Display(Name = "Stato")]
         public StatoPreventivo Stato { get; set; } = StatoPreventivo.Bozza;
+
+        // ✅ PROPRIETÀ CALCOLATE UTILI
+        public decimal AreaTotale => Dimensioni?.Sum(d => d.Area) ?? 0;
+        public int NumeroDimensioni => Dimensioni?.Count ?? 0;
+
+        // Calcolo automatico dei totali
+        public void CalcolaTotali()
+        {
+            // Qui implementerai la logica di calcolo
+            // Subtotale = calcolo base sui componenti
+            // Iva = Subtotale * 0.22m (22%)
+            // Totale = Subtotale + Iva
+        }
     }
 
     public enum StatoPreventivo
@@ -107,8 +124,8 @@ namespace WeeSe.Models
         Bozza,
         Inviato,
         Approvato,
-        Rifiutato,
+        Rifiutato,    // ← Questo invece di "Respinto"
         Confermato,
-        Annullato
+        Annullato     // ← Questo invece di "Scaduto"
     }
 }

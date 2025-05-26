@@ -1,0 +1,313 @@
+﻿@model WeeSe.Models.ViewModels.CommesseDashboardViewModel
+@using WeeSe.Extensions
+@{
+    ViewData["Title"] = "Dashboard Commesse";
+}
+
+<div class="commesse-dashboard">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-0">
+                <i class="fas fa-chart-pie text-primary"></i>
+                Dashboard Commesse
+            </h1>
+            <small class="text-muted">Panoramica generale delle commesse</small>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-action="Create" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Nuova Commessa
+            </a>
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                <i class="fas fa-list"></i> Tutte le Commesse
+            </a>
+        </div>
+    </div>
+
+    <!-- Statistiche principali -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="stat-card bg-primary text-white">
+                <div class="stat-icon">
+                    <i class="fas fa-project-diagram"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>@Model.TotaleCommesse</h3>
+                    <p>Totale Commesse</p>
+                    <small class="stat-trend">
+                        <i class="fas fa-chart-line"></i> Sistema attivo
+                    </small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card bg-info text-white">
+                <div class="stat-icon">
+                    <i class="fas fa-play-circle"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>@Model.CommesseAttive</h3>
+                    <p>Attive</p>
+                    <small class="stat-trend">
+                        <i class="fas fa-sync"></i> In lavorazione
+                    </small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card bg-warning text-white">
+                <div class="stat-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>@Model.CommesseInRitardo</h3>
+                    <p>In Ritardo</p>
+                    <small class="stat-trend">
+                        @if (Model.CommesseInRitardo > 0)
+                        {
+                            <i class="fas fa-exclamation-triangle"></i> <span>Attenzione</span>
+                        }
+                        else
+                        {
+                            <i class="fas fa-check"></i> <span>Tutto ok</span>
+                        }
+                    </small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card bg-danger text-white">
+                <div class="stat-icon">
+                    <i class="fas fa-fire"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>@Model.CommesseUrgenti</h3>
+                    <p>Urgenti</p>
+                    <small class="stat-trend">
+                        @if (Model.CommesseUrgenti > 0)
+                        {
+                            <i class="fas fa-bolt"></i> <span>Priorità alta</span>
+                        }
+                        else
+                        {
+                            <i class="fas fa-thumbs-up"></i> <span>Nessuna urgenza</span>
+                        }
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Colonna sinistra -->
+        <div class="col-lg-8">
+            <!-- Commesse recenti -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-history text-primary"></i>
+                            Commesse Recenti
+                        </h5>
+                        <a asp-action="Index" class="btn btn-sm btn-outline-primary">Vedi Tutte</a>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    @if (Model.CommesseRecenti?.Any() == true)
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Numero</th>
+                                        <th>Cliente</th>
+                                        <th>Data</th>
+                                        <th>Stato</th>
+                                        <th>Importo</th>
+                                        <th>Azioni</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var commessa in Model.CommesseRecenti)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <a asp-action="Details" asp-route-id="@commessa.Id"
+                                                   class="fw-bold text-decoration-none">
+                                                    @commessa.NumeroCommessa
+                                                </a>
+                                                @if (commessa.Priorita == PrioritaCommessa.Urgente)
+                                                {
+                                                    <i class="fas fa-fire text-danger ms-1" title="Urgente"></i>
+                                                }
+                                            </td>
+                                            <td>@commessa.Cliente</td>
+                                            <td>@commessa.DataInizio.ToString("dd/MM")</td>
+                                            <td>
+                                                <span class="@commessa.CssClassStato">
+                                                    @commessa.Stato.GetDisplayName()
+                                                </span>
+                                            </td>
+                                            <td>
+                                                @if (commessa.ImportoTotale > 0)
+                                                {
+                                                    <span>@commessa.ImportoTotale.ToString("C")</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">-</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm">
+                                                    <a asp-action="Details" asp-route-id="@commessa.Id"
+                                                       class="btn btn-outline-primary btn-sm">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    <a asp-action="Edit" asp-route-id="@commessa.Id"
+                                                       class="btn btn-outline-secondary btn-sm">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-4">
+                            <i class="fas fa-project-diagram fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">Nessuna commessa recente</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Colonna destra -->
+        <div class="col-lg-4">
+            <!-- Commesse in scadenza -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-calendar-exclamation text-warning"></i>
+                        In Scadenza
+                    </h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.CommesseInScadenza?.Any() == true)
+                    {
+                        <div class="list-group list-group-flush">
+                            @foreach (var commessa in Model.CommesseInScadenza)
+                            {
+                                <div class="list-group-item px-0">
+                                    <h6 class="mb-1">
+                                        <a asp-action="Details" asp-route-id="@commessa.Id"
+                                           class="text-decoration-none">
+                                            @commessa.NumeroCommessa
+                                        </a>
+                                    </h6>
+                                    <p class="mb-1 small">@commessa.Cliente</p>
+                                    <small class="text-muted">
+                                        @if (commessa.DataFinePrevista.HasValue)
+                                        {
+                                            <span>Scade: @commessa.DataFinePrevista.Value.ToString("dd/MM/yyyy")</span>
+                                        }
+                                    </small>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-3">
+                            <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+                            <p class="text-muted mb-0">Nessuna scadenza</p>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Azioni rapide -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-bolt text-primary"></i>
+                        Azioni Rapide
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a asp-action="Create" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Nuova Commessa
+                        </a>
+                        <a asp-action="Index" asp-route-Filtri.SoloUrgenti="true" class="btn btn-outline-danger">
+                            <i class="fas fa-fire"></i> Urgenti
+                        </a>
+                        <a asp-action="Index" asp-route-Filtri.SoloInRitardo="true" class="btn btn-outline-warning">
+                            <i class="fas fa-clock"></i> In Ritardo
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .commesse-dashboard {
+            padding: 1rem;
+        }
+
+        .stat-card {
+            border-radius: 12px;
+            padding: 2rem;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+            height: 100%;
+        }
+
+            .stat-card:hover {
+                transform: translateY(-2px);
+            }
+
+        .stat-icon {
+            font-size: 3rem;
+            margin-right: 1.5rem;
+            opacity: 0.8;
+        }
+
+        .stat-content h3 {
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+
+        .stat-content p {
+            margin: 0;
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .stat-trend {
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+
+        .card {
+            border: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-bottom: 1px solid #dee2e6;
+        }
+    </style>
+}

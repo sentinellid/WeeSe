@@ -1,0 +1,471 @@
+﻿@using WeeSe.Extensions
+@using WeeSe.Models
+@model WeeSe.Models.Ordine
+@{
+    ViewData["Title"] = "Dettagli Ordine";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 mb-0">
+                        <i class="fas fa-shopping-cart text-primary"></i> 
+                        Ordine @Model.NumeroOrdine
+                    </h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item">
+                                <a asp-controller="Home" asp-action="Index">Home</a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a asp-action="Index">Ordini</a>
+                            </li>
+                            <li class="breadcrumb-item active">@Model.NumeroOrdine</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="btn-group">
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+                        <i class="fas fa-edit"></i> Modifica
+                    </a>
+                    <a asp-action="Index" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left"></i> Torna all'Elenco
+                    </a>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Colonna principale -->
+                <div class="col-lg-8">
+                    <!-- Informazioni principali -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-info-circle"></i> Informazioni Ordine
+                            </h5>
+                            <div>
+                                <span class="@Model.CssClassStato">@Model.Stato.GetDisplayName()</span>
+                                @if (Model.Priorita == PrioritaOrdine.Urgente)
+                                {
+                                        <span class="badge bg-danger ms-2">
+                                            <i class="fas fa-fire"></i> URGENTE
+                                        </span>
+                                }
+                                @if (Model.InRitardo)
+                                {
+                                        <span class="badge bg-warning ms-2">
+                                            <i class="fas fa-clock"></i> IN RITARDO
+                                        </span>
+                                }
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <table class="table table-borderless">
+                                        <tr>
+                                            <td class="fw-bold">Numero Ordine:</td>
+                                            <td>@Model.NumeroOrdine</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold">Cliente:</td>
+                                            <td>@Model.Cliente</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold">Data Ordine:</td>
+                                            <td>@Model.DataOrdine.ToString("dd/MM/yyyy")</td>
+                                        </tr>
+                                        @if (Model.Commessa != null)
+                                        {
+                                                <tr>
+                                                    <td class="fw-bold">Commessa:</td>
+                                                    <td>
+                                                        <a asp-controller="Commesse" asp-action="Details" asp-route-id="@Model.CommessaId">
+                                                        @Model.Commessa.NumeroCommessa
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                        }
+                                        @if (Model.Preventivo != null)
+                                        {
+                                                <tr>
+                                                    <td class="fw-bold">Preventivo:</td>
+                                                    <td>
+                                                        <a asp-controller="Preventivi" asp-action="Details" asp-route-id="@Model.PreventivoId">
+                                                        @Model.Preventivo.NumeroPreventivo
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                        }
+                                    </table>
+                                </div>
+                                <div class="col-md-6">
+                                    <table class="table table-borderless">
+                                        <tr>
+                                            <td class="fw-bold">Priorità:</td>
+                                            <td>
+                                                <span class="@Model.CssClassPriorita">
+                                                    @Model.Priorita.GetDisplayName()
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        @if (!string.IsNullOrEmpty(Model.Responsabile))
+                                        {
+                                                <tr>
+                                                    <td class="fw-bold">Responsabile:</td>
+                                                    <td>@Model.Responsabile</td>
+                                                </tr>
+                                        }
+                                        @if (!string.IsNullOrEmpty(Model.Fornitore))
+                                        {
+                                                <tr>
+                                                    <td class="fw-bold">Fornitore:</td>
+                                                    <td>@Model.Fornitore</td>
+                                                </tr>
+                                        }
+                                        @if (!string.IsNullOrEmpty(Model.NumeroTracking))
+                                        {
+                                                <tr>
+                                                    <td class="fw-bold">Tracking:</td>
+                                                    <td>
+                                                        <span class="badge bg-info">@Model.NumeroTracking</span>
+                                                        <button class="btn btn-sm btn-outline-secondary ms-2" 
+                                                                onclick="copyToClipboard('@Model.NumeroTracking')">
+                                                            <i class="fas fa-copy"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                        }
+                                    </table>
+                                </div>
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(Model.Descrizione))
+                            {
+                                    <div class="mt-3">
+                                        <h6 class="fw-bold">Descrizione:</h6>
+                                        <p class="text-muted">@Model.Descrizione</p>
+                                    </div>
+                            }
+
+                            @if (!string.IsNullOrEmpty(Model.IndirizzoSpedizione))
+                            {
+                                    <div class="mt-3">
+                                        <h6 class="fw-bold">Indirizzo di Spedizione:</h6>
+                                        <address class="text-muted">
+                                        @Html.Raw(Model.IndirizzoSpedizione.Replace("\n", "<br>"))
+                                        </address>
+                                    </div>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Date e scadenze -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-calendar-alt"></i> Timeline e Scadenze
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="timeline">
+                                <div class="timeline-item">
+                                    <div class="timeline-marker bg-primary"></div>
+                                    <div class="timeline-content">
+                                        <h6 class="timeline-title">Ordine Creato</h6>
+                                        <p class="timeline-date">@Model.DataOrdine.ToString("dd/MM/yyyy")</p>
+                                    </div>
+                                </div>
+
+                                @if (Model.DataConsegnaRichiesta.HasValue)
+                                {
+                                        <div class="timeline-item">
+                                            <div class="timeline-marker @(Model.InRitardo ? "bg-danger" : "bg-warning")"></div>
+                                            <div class="timeline-content">
+                                                <h6 class="timeline-title">
+                                                    Consegna Richiesta
+                                                @if (Model.InRitardo)
+                                                {
+                                                            <span class="badge bg-danger ms-2">IN RITARDO</span>
+                                                }
+                                                </h6>
+                                                <p class="timeline-date">@Model.DataConsegnaRichiesta.Value.ToString("dd/MM/yyyy")</p>
+                                            </div>
+                                        </div>
+                                }
+
+                                @if (Model.DataConsegnaEffettiva.HasValue)
+                                {
+                                        <div class="timeline-item">
+                                            <div class="timeline-marker bg-success"></div>
+                                            <div class="timeline-content">
+                                                <h6 class="timeline-title">Consegnato</h6>
+                                                <p class="timeline-date">@Model.DataConsegnaEffettiva.Value.ToString("dd/MM/yyyy")</p>
+                                            </div>
+                                        </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Note -->
+                    @if (!string.IsNullOrEmpty(Model.Note) || !string.IsNullOrEmpty(Model.NoteInterne))
+                    {
+                            <div class="card shadow-sm mb-4">
+                                <div class="card-header bg-secondary text-white">
+                                    <h5 class="card-title mb-0">
+                                        <i class="fas fa-sticky-note"></i> Note e Osservazioni
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                @if (!string.IsNullOrEmpty(Model.Note))
+                                {
+                                            <div class="mb-3">
+                                                <h6 class="fw-bold text-primary">Note Cliente:</h6>
+                                                <p class="text-muted">@Html.Raw(Model.Note.Replace("\n", "<br>"))</p>
+                                            </div>
+                                }
+                                @if (!string.IsNullOrEmpty(Model.NoteInterne))
+                                {
+                                            <div>
+                                                <h6 class="fw-bold text-warning">Note Interne:</h6>
+                                                <p class="text-muted">@Html.Raw(Model.NoteInterne.Replace("\n", "<br>"))</p>
+                                            </div>
+                                }
+                                </div>
+                            </div>
+                    }
+                </div>
+
+                <!-- Sidebar -->
+                <div class="col-lg-4">
+                    <!-- Azioni rapide -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-dark text-white">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-bolt"></i> Azioni Rapide
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-outline-primary dropdown-toggle" 
+                                            data-bs-toggle="dropdown">
+                                        <i class="fas fa-exchange-alt"></i> Cambia Stato
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        @foreach (var stato in Enum.GetValues<StatoOrdine>())
+                                        {
+                                            @if (stato != Model.Stato)
+                                            {
+                                                        <li>
+                                                            <a class="dropdown-item" href="#" 
+                                                               onclick="changeStatus(@Model.Id, '@stato')">
+                                                        @stato.GetDisplayName()
+                                                            </a>
+                                                        </li>
+                                            }
+                                        }
+                                    </ul>
+                                </div>
+
+                                @if (!string.IsNullOrEmpty(Model.NumeroTracking))
+                                {
+                                        <button class="btn btn-outline-info" onclick="trackPackage('@Model.NumeroTracking')">
+                                            <i class="fas fa-truck"></i> Traccia Spedizione
+                                        </button>
+                                }
+
+                                <button class="btn btn-outline-success" onclick="window.print()">
+                                    <i class="fas fa-print"></i> Stampa Ordine
+                                </button>
+
+                                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+                                    <i class="fas fa-edit"></i> Modifica Ordine
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Importi -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-euro-sign"></i> Situazione Economica
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <div class="d-flex justify-content-between">
+                                        <span class="fw-bold">Importo Totale:</span>
+                                        <span class="fs-5 fw-bold text-primary">@Model.ImportoTotale.ToString("C")</span>
+                                    </div>
+                                </div>
+                                @if (Model.ImportoPagato > 0)
+                                {
+                                        <div class="col-12">
+                                            <div class="d-flex justify-content-between">
+                                                <span>Importo Pagato:</span>
+                                                <span class="text-success">@Model.ImportoPagato.ToString("C")</span>
+                                            </div>
+                                        </div>
+                                }
+                                @if (Model.ImportoResiduo > 0)
+                                {
+                                        <div class="col-12">
+                                            <div class="d-flex justify-content-between">
+                                                <span class="fw-bold">Residuo da Pagare:</span>
+                                                <span class="fw-bold text-danger">@Model.ImportoResiduo.ToString("C")</span>
+                                            </div>
+                                        </div>
+                                }
+                                else if (Model.ImportoTotale > 0)
+                                {
+                                        <div class="col-12">
+                                            <div class="alert alert-success mb-0">
+                                                <i class="fas fa-check-circle"></i> Pagamento Completato
+                                            </div>
+                                        </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Metadati -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-light">
+                            <h6 class="card-title mb-0">
+                                <i class="fas fa-info"></i> Informazioni Sistema
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <small class="text-muted">
+                                <div class="mb-2">
+                                    <strong>Creato:</strong> @Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+                                    @if (!string.IsNullOrEmpty(Model.CreatedBy))
+                                    {
+                                            <br>
+
+                                        <strong>da:</strong> @Model.CreatedBy
+                                    }
+                                </div>
+                                @if (Model.UpdatedAt.HasValue)
+                                {
+                                        <div>
+                                            <strong>Modificato:</strong> @Model.UpdatedAt.Value.ToString("dd/MM/yyyy HH:mm")
+                                        @if (!string.IsNullOrEmpty(Model.UpdatedBy))
+                                        {
+                                                    <br>
+
+                                            <strong>da:</strong> @Model.UpdatedBy
+                                        }
+                                        </div>
+                                }
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+        <script>
+            // Cambio stato ordine
+            function changeStatus(id, newStatus) {
+                if (confirm('Cambiare lo stato dell\'ordine a: ' + newStatus + '?')) {
+                    $.post('@Url.Action("ChangeStatus")', { id: id, nuovoStato: newStatus })
+                        .done(function(data) {
+                            if (data.success) {
+                                location.reload();
+                            } else {
+                                alert('Errore: ' + data.error);
+                            }
+                        });
+                }
+            }
+
+            // Copia negli appunti
+            function copyToClipboard(text) {
+                navigator.clipboard.writeText(text).then(function() {
+                    // Mostra feedback visivo
+                    var button = event.target.closest('button');
+                    var originalHtml = button.innerHTML;
+                    button.innerHTML = '<i class="fas fa-check text-success"></i>';
+                    setTimeout(() => {
+                        button.innerHTML = originalHtml;
+                    }, 1000);
+                });
+            }
+
+            // Tracking spedizione (placeholder)
+            function trackPackage(trackingNumber) {
+                // Qui potresti integrare con API di corrieri
+                alert('Tracking: ' + trackingNumber + '\n\nFunzionalità in sviluppo...');
+            }
+        </script>
+}
+
+@section Styles {
+        <style>
+            .timeline {
+                position: relative;
+                padding-left: 2rem;
+            }
+
+            .timeline-item {
+                position: relative;
+                margin-bottom: 2rem;
+            }
+
+            .timeline-item:before {
+                content: '';
+                position: absolute;
+                left: -2rem;
+                top: 0.5rem;
+                width: 2px;
+                height: calc(100% + 1rem);
+                background: #dee2e6;
+            }
+
+            .timeline-item:last-child:before {
+                display: none;
+            }
+
+            .timeline-marker {
+                position: absolute;
+                left: -2.5rem;
+                top: 0.25rem;
+                width: 1rem;
+                height: 1rem;
+                border-radius: 50%;
+                border: 3px solid white;
+                box-shadow: 0 0 0 3px #dee2e6;
+            }
+
+            .timeline-content {
+                background: #f8f9fa;
+                border-radius: 0.5rem;
+                padding: 1rem;
+                border-left: 4px solid #dee2e6;
+            }
+
+            .timeline-title {
+                margin: 0 0 0.5rem 0;
+                font-weight: 600;
+                color: #495057;
+            }
+
+            .timeline-date {
+                margin: 0;
+                font-size: 0.875rem;
+                color: #6c757d;
+            }
+
+        </style>
+}

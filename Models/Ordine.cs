@@ -122,6 +122,7 @@ namespace WeeSe.Models
             PrioritaOrdine.Urgente => "text-danger",
             _ => "text-muted"
         };
+
     }
 
     public enum PrioritaOrdine

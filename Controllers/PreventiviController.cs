@@ -101,13 +101,13 @@ namespace WeeSe.Controllers
             return View(viewModel); // ✅ RITORNA IL VIEWMODEL IN CASO DI ERRORE
         }
 
-        // GET: Preventivi/Edit/5 ⚠️ QUESTA USA VIEWMODEL
+        // GET: Preventivi/Edit/5 ⚠️ QUESTO MANCAVA!
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
 
             var preventivo = await _context.Preventivi
-                .Include(p => p.Dimensioni.OrderBy(d => d.Numero))
+                .Include(p => p.Dimensioni)
                 .FirstOrDefaultAsync(p => p.Id == id);
 
             if (preventivo == null) return NotFound();
@@ -115,10 +115,10 @@ namespace WeeSe.Controllers
             // ✅ CONVERTI MODEL → VIEWMODEL
             var viewModel = MapModelToViewModel(preventivo);
 
-            return View(viewModel); // ✅ PASSA IL VIEWMODEL
+            return View(viewModel); // ✅ PASSA IL VIEWMODEL ALLA VIEW
         }
 
-        // POST: Preventivi/Edit/5 ⚠️ QUESTA USA VIEWMODEL
+        // POST: Preventivi/Edit/5 ⚠️ QUESTA USA VIEWMODEL 1
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, PreventivoViewModel viewModel)
@@ -496,5 +496,95 @@ namespace WeeSe.Controllers
                 _ => false
             };
         }
+        /// <summary>
+        /// 🎯 Crea automaticamente Ordine e Commessa quando un preventivo viene confermato
+        /// </summary>
+        private async Task CreaOrdineECommessaDaPreventivo(int preventivoId)
+        {
+            try
+            {
+                // 📥 RECUPERA IL PREVENTIVO
+                var preventivo = await _context.Preventivi.FindAsync(preventivoId);
+                if (preventivo == null)
+                {
+                    throw new InvalidOperationException($"Preventivo {preventivoId} non trovato");
+                }
+
+                // 🚀 CREA ORDINE
+                var numeroOrdine = await GeneraNumeroOrdineAsync();
+                var ordine = new Ordine
+                {
+                    PreventivoId = preventivoId,
+                    NumeroOrdine = numeroOrdine,
+                    Cliente = preventivo.Cliente,
+                    IndirizzoSpedizione = preventivo.Indirizzo,
+                    Descrizione = $"Ordine generato da preventivo {preventivo.NumeroPreventivo}",
+                    DataOrdine = DateTime.Now,
+                    DataConsegnaRichiesta = DateTime.Now.AddDays(15), // 15 giorni di default
+                    Stato = StatoOrdine.Nuovo,
+                    Priorita = PrioritaOrdine.Media,
+                    ImportoTotale = CalcolaImportoPreventivo(preventivo),
+                    Responsabile = User.Identity?.Name ?? "Sistema",
+                    Note = $"Generato automaticamente da preventivo {preventivo.NumeroPreventivo} il {DateTime.Now:dd/MM/yyyy}",
+                    CreatedBy = User.Identity?.Name ?? "Sistema",
+                    CreatedAt = DateTime.Now
+                };
+
+                _context.Ordini.Add(ordine);
+                await _context.SaveChangesAsync(); // 💾 Salva per ottenere ordine.Id
+
+                // 🚀 CREA COMMESSA
+                var numeroCommessa = await GeneraNumeroCommessaAsync();
+                var commessa = new Commessa
+                {
+                    OrdineId = ordine.Id,           // 🔗 LINK ALL'ORDINE
+                    PreventivoId = preventivoId,    // 🔗 LINK AL PREVENTIVO
+                    NumeroCommessa = numeroCommessa,
+                    Cliente = preventivo.Cliente,
+                    IndirizzoCliente = preventivo.Indirizzo,
+                    Descrizione = $"Commessa per ordine {ordine.NumeroOrdine}",
+                    DataInizio = DateTime.Now,
+                    DataFinePrevista = DateTime.Now.AddDays(10), // 10 giorni lavorativi
+                    Stato = StatoCommessa.Nuova,
+                    Priorita = PrioritaCommessa.Media,
+                    ImportoTotale = CalcolaImportoPreventivo(preventivo),
+                    Responsabile = User.Identity?.Name ?? "Sistema",
+                    Note = $"Generata automaticamente da ordine {ordine.NumeroOrdine} il {DateTime.Now:dd/MM/yyyy}",
+                    CreatedBy = User.Identity?.Name ?? "Sistema",
+                    CreatedAt = DateTime.Now
+                };
+
+                _context.Commesse.Add(commessa);
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("🎯 CREATI: Ordine {NumeroOrdine} (ID: {OrdineId}) e Commessa {NumeroCommessa} (ID: {CommessaId}) per Preventivo {PreventivoId}",
+                    numeroOrdine, ordine.Id, numeroCommessa, commessa.Id, preventivoId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "❌ Errore durante la creazione di Ordine e Commessa per Preventivo {PreventivoId}", preventivoId);
+                throw; // Rilancia l'eccezione per il rollback della transazione
+            }
+        }
+        private decimal CalcolaImportoPreventivo(Preventivo preventivo)
+        {
+            decimal importoBase = 0;
+
+            // 🔄 FOREACH SUI RECORD DELLA TABELLA [TBL_DimensioniFinite]
+            var dimensioniFinite = _context.DimensioniFinite
+                .Where(d => d.PreventivoId == preventivo.Id)
+                .ToListAsync();
+
+
+            // 💰 COSTI AGGIUNTIVI (resto uguale)
+            if (!string.IsNullOrEmpty(preventivo.TrasportoImballo) && preventivo.TrasportoImballo.Contains("spedizione"))
+                importoBase += 50; // Costo spedizione
+
+            if (!string.IsNullOrEmpty(preventivo.FinituraVetro) && preventivo.FinituraVetro != "chiaro")
+                importoBase *= 1.1m; // +10% per finiture speciali
+
+            return Math.Round(importoBase, 2);
+        }
+
     }
 }

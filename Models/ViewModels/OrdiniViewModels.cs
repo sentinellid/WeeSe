@@ -10,9 +10,6 @@ namespace WeeSe.Models.ViewModels
         [Display(Name = "Numero Ordine")]
         public string NumeroOrdine { get; set; } = string.Empty;
 
-        [Display(Name = "Commessa")]
-        public int? CommessaId { get; set; }
-
         [Display(Name = "Preventivo")]
         public int? PreventivoId { get; set; }
 
@@ -80,16 +77,6 @@ namespace WeeSe.Models.ViewModels
         public List<string> ResponsabiliDisponibili { get; set; } = new();
         public List<string> FornitoriDisponibili { get; set; } = new();
 
-        public void LoadDropdownData(IEnumerable<Commessa> commesse,
-                                   IEnumerable<Preventivo> preventivi,
-                                   IEnumerable<string> responsabili,
-                                   IEnumerable<string> fornitori)
-        {
-            CommesseDisponibili = commesse.ToList();
-            PreventiviDisponibili = preventivi.ToList();
-            ResponsabiliDisponibili = responsabili.ToList();
-            FornitoriDisponibili = fornitori.ToList();
-        }
     }
 
     public class OrdiniIndexViewModel

@@ -27,7 +27,6 @@ namespace WeeSe.Controllers
                 filtri ??= new OrdiniFiltriViewModel();
 
                 var query = _context.Ordini
-                    .Include(o => o.Commessa)
                     .Include(o => o.Preventivo)
                     .AsQueryable();
 
@@ -37,8 +36,7 @@ namespace WeeSe.Controllers
                     query = query.Where(o =>
                         o.NumeroOrdine.Contains(filtri.SearchTerm) ||
                         o.Cliente.Contains(filtri.SearchTerm) ||
-                        (o.Descrizione != null && o.Descrizione.Contains(filtri.SearchTerm)) ||
-                        (o.NumeroTracking != null && o.NumeroTracking.Contains(filtri.SearchTerm)));
+                        (o.Descrizione != null && o.Descrizione.Contains(filtri.SearchTerm)) );
                 }
 
                 if (filtri.Stato.HasValue)
@@ -49,9 +47,6 @@ namespace WeeSe.Controllers
 
                 if (!string.IsNullOrEmpty(filtri.Responsabile))
                     query = query.Where(o => o.Responsabile != null && o.Responsabile.Contains(filtri.Responsabile));
-
-                if (!string.IsNullOrEmpty(filtri.Fornitore))
-                    query = query.Where(o => o.Fornitore != null && o.Fornitore.Contains(filtri.Fornitore));
 
                 if (filtri.DataDal.HasValue)
                     query = query.Where(o => o.DataOrdine >= filtri.DataDal.Value);
@@ -136,7 +131,6 @@ namespace WeeSe.Controllers
             try
             {
                 var ordine = await _context.Ordini
-                    .Include(o => o.Commessa)
                     .Include(o => o.Preventivo)
                     .FirstOrDefaultAsync(m => m.Id == id);
 
@@ -234,9 +228,7 @@ namespace WeeSe.Controllers
                     if (ordine == null) return NotFound();
 
                     UpdateOrdineFromViewModel(ordine, viewModel);
-                    ordine.UpdatedBy = User.Identity?.Name;
-                    ordine.UpdatedAt = DateTime.Now;
-
+                    
                     _context.Update(ordine);
                     await _context.SaveChangesAsync();
 
@@ -298,15 +290,7 @@ namespace WeeSe.Controllers
 
                 var vecchioStato = ordine.Stato;
                 ordine.Stato = nuovoStato;
-                ordine.UpdatedBy = User.Identity?.Name;
-                ordine.UpdatedAt = DateTime.Now;
-
-                // Se consegnato, imposta data consegna effettiva
-                if (nuovoStato == StatoOrdine.Consegnato && !ordine.DataConsegnaEffettiva.HasValue)
-                {
-                    ordine.DataConsegnaEffettiva = DateTime.Now;
-                }
-
+                
                 await _context.SaveChangesAsync();
 
                 _logger.LogInformation("Stato ordine {Id} cambiato da {VecchioStato} a {NuovoStato}",
@@ -340,7 +324,6 @@ namespace WeeSe.Controllers
                         o.Priorita == PrioritaOrdine.Urgente && o.Stato != StatoOrdine.Consegnato),
 
                     OrdiniRecenti = await _context.Ordini
-                        .Include(o => o.Commessa)
                         .Include(o => o.Preventivo)
                         .OrderByDescending(o => o.CreatedAt)
                         .Take(5)
@@ -443,13 +426,6 @@ namespace WeeSe.Controllers
                 .Distinct()
                 .ToListAsync();
 
-            var fornitori = await _context.Ordini
-                .Where(o => !string.IsNullOrEmpty(o.Fornitore))
-                .Select(o => o.Fornitore!)
-                .Distinct()
-                .ToListAsync();
-
-            viewModel.LoadDropdownData(commesse, preventivi, responsabili, fornitori);
         }
 
         private Ordine MapToOrdine(OrdineViewModel viewModel)
@@ -457,23 +433,17 @@ namespace WeeSe.Controllers
             return new Ordine
             {
                 NumeroOrdine = viewModel.NumeroOrdine,
-                CommessaId = viewModel.CommessaId,
                 PreventivoId = viewModel.PreventivoId,
                 Cliente = viewModel.Cliente,
-                IndirizzoSpedizione = viewModel.IndirizzoSpedizione,
                 Descrizione = viewModel.Descrizione,
                 DataOrdine = viewModel.DataOrdine,
                 DataConsegnaRichiesta = viewModel.DataConsegnaRichiesta,
-                DataConsegnaEffettiva = viewModel.DataConsegnaEffettiva,
                 Stato = viewModel.Stato,
                 Priorita = viewModel.Priorita,
                 ImportoTotale = viewModel.ImportoTotale,
                 ImportoPagato = viewModel.ImportoPagato,
                 Responsabile = viewModel.Responsabile,
-                Fornitore = viewModel.Fornitore,
-                NumeroTracking = viewModel.NumeroTracking,
-                Note = viewModel.Note,
-                NoteInterne = viewModel.NoteInterne
+                Note = viewModel.Note
             };
         }
 
@@ -483,49 +453,36 @@ namespace WeeSe.Controllers
             {
                 Id = ordine.Id,
                 NumeroOrdine = ordine.NumeroOrdine,
-                CommessaId = ordine.CommessaId,
                 PreventivoId = ordine.PreventivoId,
                 Cliente = ordine.Cliente,
-                IndirizzoSpedizione = ordine.IndirizzoSpedizione,
                 Descrizione = ordine.Descrizione,
                 DataOrdine = ordine.DataOrdine,
                 DataConsegnaRichiesta = ordine.DataConsegnaRichiesta,
-                DataConsegnaEffettiva = ordine.DataConsegnaEffettiva,
                 Stato = ordine.Stato,
                 Priorita = ordine.Priorita,
                 ImportoTotale = ordine.ImportoTotale,
                 ImportoPagato = ordine.ImportoPagato,
                 Responsabile = ordine.Responsabile,
-                Fornitore = ordine.Fornitore,
-                NumeroTracking = ordine.NumeroTracking,
                 Note = ordine.Note,
-                NoteInterne = ordine.NoteInterne,
                 CreatedAt = ordine.CreatedAt,
-                CreatedBy = ordine.CreatedBy,
-                UpdatedAt = ordine.UpdatedAt,
-                UpdatedBy = ordine.UpdatedBy
+                CreatedBy = ordine.CreatedBy
             };
         }
 
         private void UpdateOrdineFromViewModel(Ordine ordine, OrdineViewModel viewModel)
         {
-            ordine.CommessaId = viewModel.CommessaId;
             ordine.PreventivoId = viewModel.PreventivoId;
             ordine.Cliente = viewModel.Cliente;
-            ordine.IndirizzoSpedizione = viewModel.IndirizzoSpedizione;
             ordine.Descrizione = viewModel.Descrizione;
             ordine.DataOrdine = viewModel.DataOrdine;
             ordine.DataConsegnaRichiesta = viewModel.DataConsegnaRichiesta;
-            ordine.DataConsegnaEffettiva = viewModel.DataConsegnaEffettiva;
             ordine.Stato = viewModel.Stato;
             ordine.Priorita = viewModel.Priorita;
             ordine.ImportoTotale = viewModel.ImportoTotale;
             ordine.ImportoPagato = viewModel.ImportoPagato;
             ordine.Responsabile = viewModel.Responsabile;
-            ordine.Fornitore = viewModel.Fornitore;
-            ordine.NumeroTracking = viewModel.NumeroTracking;
             ordine.Note = viewModel.Note;
-            ordine.NoteInterne = viewModel.NoteInterne;
+           
         }
     }
 }

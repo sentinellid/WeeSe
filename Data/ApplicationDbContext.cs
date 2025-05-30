@@ -17,6 +17,10 @@ namespace WeeSe.Data
         public DbSet<Ordine> Ordini { get; set; }
         public DbSet<ListinoPrezzo> ListiniPrezzi { get; set; }
         public DbSet<AttivitaCommessa> AttivitaCommesse { get; set; }
+        public DbSet<Listino> Listini { get; set; }
+        public DbSet<ListinoProdotto> ListinoProdotti { get; set; }
+        public DbSet<Prodotto> Prodotti { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -38,6 +42,18 @@ namespace WeeSe.Data
                       .HasForeignKey(d => d.PreventivoId)
                       .OnDelete(DeleteBehavior.Cascade);
             });
+            // Configurazioni specifiche se necessarie
+            builder.Entity<Listino>()
+                .Property(e => e.PerTrasporto)
+                .HasPrecision(5, 2);
+
+            builder.Entity<Listino>()
+                .Property(e => e.CostoCapra)
+                .HasPrecision(10, 2);
+
+            builder.Entity<Listino>()
+                .Property(e => e.PerImballo)
+                .HasPrecision(5, 2);
         }
 
 

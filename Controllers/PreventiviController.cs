@@ -158,6 +158,12 @@ namespace WeeSe.Controllers
 
                     _context.Update(preventivo);
                     await _context.SaveChangesAsync();
+                    var nuovoStato = viewModel.Stato;
+
+                    if (nuovoStato == StatoPreventivo.Confermato)
+                    {
+                        return await Accetta(id);  // 🚀 CHIAMA LA FUNZIONE ACCETTA ESISTENTE
+                    }
 
                     TempData["Success"] = "✅ Preventivo aggiornato con successo!";
                     return RedirectToAction(nameof(Details), new { id });
@@ -318,7 +324,6 @@ namespace WeeSe.Controllers
             {
                 // 1️⃣ Trova e verifica preventivo
                 var preventivo = await _context.Preventivi
-                    .Include(p => p.Cliente)
                     .FirstOrDefaultAsync(p => p.Id == id);
 
                 if (preventivo == null)
@@ -331,13 +336,15 @@ namespace WeeSe.Controllers
 
                 // 3️⃣ 🚀 CREA ORDINE AUTOMATICAMENTE
                 var numeroOrdine = await GeneraNumeroOrdineAsync();
+                var numeroCommessa = await GeneraNumeroCommessaAsync();
+                
                 var ordine = new Ordine
                 {
                     PreventivoId = preventivo.Id,
+                    NumeroPreventivo = preventivo.NumeroPreventivo,
                     NumeroOrdine = numeroOrdine,
                     Cliente = preventivo.Cliente,
-                    //IndirizzoSpedizione = preventivo.Cliente.,
-                    Descrizione = $"Ordine generato da preventivo {preventivo.NumeroPreventivo}",
+                    Descrizione = $"Ordine generato da preventivo confermato {preventivo.NumeroPreventivo}",
                     DataOrdine = DateTime.Now,
                     DataConsegnaRichiesta = DateTime.Now.AddDays(15), // Default 15 giorni
                     Stato = StatoOrdine.Confermato, // 🎯 STATO INIZIALE
@@ -352,9 +359,8 @@ namespace WeeSe.Controllers
                 _context.Ordini.Add(ordine);
                 await _context.SaveChangesAsync(); // 💾 Salva per ottenere ordine.Id
 
-                // 4️⃣ 🚀 CREA COMMESSA AUTOMATICAMENTE  
-                var numeroCommessa = await GeneraNumeroCommessaAsync();
-                var commessa = new Commessa
+                //// 4️⃣ 🚀 CREA COMMESSA AUTOMATICAMENTE  
+                var commessa = new Commessa()
                 {
                     OrdineId = ordine.Id, // 🔗 Link all'ordine
                     PreventivoId = preventivo.Id, // 🔗 Link al preventivo
@@ -373,25 +379,17 @@ namespace WeeSe.Controllers
 
                 _context.Commesse.Add(commessa);
 
-                // 5️⃣ 💾 SALVA TUTTO
+                //// 5️⃣ 💾 SALVA TUTTO
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
 
                 // 6️⃣ 📝 LOG
-                _logger?.LogInformation("✅ Preventivo {PreventivoId} accettato. Creati Ordine {OrdineId} e Commessa {CommessaId}",
-                    preventivo.Id, ordine.Id, commessa.Id);
+                _logger?.LogInformation("✅ Preventivo {PreventivoId} accettato. Creati Ordine {OrdineId} e Commessa {CommessaId}", preventivo.Id, ordine.Id, commessa.Id);
 
-                // 7️⃣ 🎉 RISPOSTA JSON
-                return Json(new
-                {
-                    success = true,
-                    message = "Preventivo accettato con successo!",
-                    numeroOrdine = numeroOrdine,
-                    numeroCommessa = numeroCommessa,
-                    ordineId = ordine.Id,
-                    commessaId = commessa.Id,
-                    redirectUrl = Url.Action("Details", "Ordini", new { id = ordine.Id })
-                });
+                TempData["Success"] = $"✅ Preventivo confermato! Creati automaticamente Ordine {numeroOrdine} e Commessa {numeroCommessa}";
+
+                // 🚀 REDIRECT ALLA PAGINA DETTAGLI DELL'ORDINE APPENA CREATO
+                return RedirectToAction("Details", "Ordini", new { id = ordine.Id });
             }
             catch (Exception ex)
             {
@@ -517,7 +515,6 @@ namespace WeeSe.Controllers
                     PreventivoId = preventivoId,
                     NumeroOrdine = numeroOrdine,
                     Cliente = preventivo.Cliente,
-                    IndirizzoSpedizione = preventivo.Indirizzo,
                     Descrizione = $"Ordine generato da preventivo {preventivo.NumeroPreventivo}",
                     DataOrdine = DateTime.Now,
                     DataConsegnaRichiesta = DateTime.Now.AddDays(15), // 15 giorni di default

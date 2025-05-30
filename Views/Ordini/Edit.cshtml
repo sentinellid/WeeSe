@@ -67,23 +67,7 @@
                                         <span asp-validation-for="Cliente" class="text-danger"></span>
                                     </div>
                                     
-                                    <!-- COMMESSA (OPZIONALE) -->
-                                    <div class="col-md-6">
-                                        <label asp-for="CommessaId" class="form-label"></label>
-                                        <select asp-for="CommessaId" class="form-select">
-                                            <option value="">Seleziona commessa (opzionale)</option>
-                                            @if (Model.CommesseDisponibili?.Any() == true)
-                                            {
-                                                @foreach (var commessa in Model.CommesseDisponibili)
-                                                {
-                                                    <option value="@commessa.Id">@commessa.NumeroCommessa - @commessa.Cliente</option>
-                                                }
-                                            }
-                                        </select>
-                                        <span asp-validation-for="CommessaId" class="text-danger"></span>
-                                        <small class="form-text text-muted">Collega a una commessa esistente</small>
-                                    </div>
-                                    
+                                   
                                     <!-- PREVENTIVO (OPZIONALE) -->
                                     <div class="col-md-6">
                                         <label asp-for="PreventivoId" class="form-label"></label>

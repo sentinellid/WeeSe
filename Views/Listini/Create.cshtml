@@ -1,0 +1,122 @@
+﻿@model WeeSe.Models.ViewModels.CreaListinoViewModel
+@{
+    ViewData["Title"] = "Nuovo Listino";
+}
+
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-0">
+                <i class="fas fa-list-alt text-primary me-2"></i>
+                Nuovo Listino
+            </h2>
+            <p class="text-muted">Crea un nuovo listino prezzi</p>
+        </div>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Torna all'Elenco
+        </a>
+    </div>
+
+    <!-- Form -->
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h5 class="card-title mb-0">
+                <i class="fas fa-plus me-2"></i>
+                Dati Listino
+            </h5>
+        </div>
+        <div class="card-body">
+            <form asp-action="Create" method="post">
+                <div asp-validation-summary="All" class="alert alert-danger d-none"></div>
+
+                <!-- Informazioni Base -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="NomeListino" class="form-label fw-bold">
+                                <i class="fas fa-tag me-1"></i>Nome Listino *
+                            </label>
+                            <input asp-for="NomeListino" class="form-control" placeholder="Es. Listino Base 2025" />
+                            <span asp-validation-for="NomeListino" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            <label asp-for="DataValiditaDa" class="form-label fw-bold">
+                                <i class="fas fa-calendar me-1"></i>Valido Da *
+                            </label>
+                            <input asp-for="DataValiditaDa" type="date" class="form-control" />
+                            <span asp-validation-for="DataValiditaDa" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            <label asp-for="DataValiditaA" class="form-label fw-bold">
+                                <i class="fas fa-calendar-times me-1"></i>Valido Fino A
+                            </label>
+                            <input asp-for="DataValiditaA" type="date" class="form-control" />
+                            <span asp-validation-for="DataValiditaA" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="Descrizione" class="form-label fw-bold">
+                                <i class="fas fa-align-left me-1"></i>Descrizione
+                            </label>
+                            <textarea asp-for="Descrizione" class="form-control" rows="3" placeholder="Descrizione del listino..."></textarea>
+                            <span asp-validation-for="Descrizione" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="Attivo" class="form-label fw-bold">
+                                <i class="fas fa-toggle-on me-1"></i>Stato *
+                            </label>
+                            <select asp-for="Attivo" class="form-select">
+                                <option value="">Seleziona stato...</option>
+                                <option value="true">✅ Attivo</option>
+                                <option value="false">❌ Non Attivo</option>
+                            </select>
+                            <span asp-validation-for="Attivo" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pulsanti -->
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i>Crea Listino
+                    </button>
+                    <a asp-action="Index" class="btn btn-outline-secondary">
+                        <i class="fas fa-times me-2"></i>Annulla
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            // Validazione date
+            $('#DataValiditaA').on('change', function() {
+                var dataDA = new Date($('#DataValiditaDa').val());
+                var dataA = new Date($(this).val());
+
+                if (dataA && dataA <= dataDA) {
+                    $(this)[0].setCustomValidity('La data di fine deve essere successiva alla data di inizio');
+                } else {
+                    $(this)[0].setCustomValidity('');
+                }
+            });
+        });
+    </script>
+}

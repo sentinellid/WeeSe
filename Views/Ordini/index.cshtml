@@ -274,10 +274,6 @@
                                             {
                                                 <div class="fw-semibold">@ordine.Responsabile</div>
                                             }
-                                            @if (!string.IsNullOrEmpty(ordine.Fornitore))
-                                            {
-                                                <small class="text-muted">@ordine.Fornitore</small>
-                                            }
                                         </div>
                                     </td>
                                     <td>
@@ -300,16 +296,7 @@
                                             <span class="text-muted">-</span>
                                         }
                                     </td>
-                                    <td>
-                                        @if (!string.IsNullOrEmpty(ordine.NumeroTracking))
-                                        {
-                                            <span class="badge bg-info">@ordine.NumeroTracking</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="text-muted">-</span>
-                                        }
-                                    </td>
+          
                                     <td class="text-end">
                                         <div class="btn-group btn-group-sm">
                                             <a asp-action="Details" asp-route-id="@ordine.Id"

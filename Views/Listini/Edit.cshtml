@@ -1,0 +1,404 @@
+﻿@model WeeSe.ViewModels.ListinoEditViewModel
+@{
+    ViewData["Title"] = $"Modifica Listino - {Model.Listino.NomeListino}";
+}
+
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-0">
+                <i class="fas fa-edit text-warning me-2"></i>
+                Modifica Listino
+            </h2>
+            <p class="text-muted">@Model.Listino.NomeListino</p>
+        </div>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Torna all'Elenco
+        </a>
+    </div>
+
+    <!-- Messaggi -->
+    <div id="messageContainer"></div>
+
+    <!-- Dati Listino -->
+    <div class="card mb-4 shadow">
+        <div class="card-header bg-primary text-white">
+            <h5 class="card-title mb-0">
+                <i class="fas fa-cog me-2"></i>
+                Configurazione Listino
+            </h5>
+        </div>
+        <div class="card-body">
+            <form id="listinoForm">
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(m => m.Listino.IDListino)
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="Listino.NomeListino" class="form-label fw-bold">
+                                <i class="fas fa-tag me-1"></i>Nome Listino
+                            </label>
+                            <input asp-for="Listino.NomeListino" class="form-control" required />
+                            <span asp-validation-for="Listino.NomeListino" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="mb-3">
+                            <label asp-for="Listino.PerTrasporto" class="form-label fw-bold">
+                                <i class="fas fa-truck me-1"></i>Trasporto
+                            </label>
+                            <div class="input-group">
+                                <input asp-for="Listino.PerTrasporto" 
+                                       class="form-control" 
+                                       type="number" 
+                                       step="0.01" 
+                                       min="0" 
+                                       max="100" />
+                                <span class="input-group-text"><text>%</text></span>
+                            </div>
+                            <span asp-validation-for="Listino.PerTrasporto" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="mb-3">
+                            <label asp-for="Listino.CostoCapra" class="form-label fw-bold">
+                                <i class="fas fa-euro-sign me-1"></i>Costo Capra
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text">€</span>
+                                <input asp-for="Listino.CostoCapra" 
+                                       class="form-control" 
+                                       type="number" 
+                                       step="0.01" 
+                                       min="0" />
+                            </div>
+                            <span asp-validation-for="Listino.CostoCapra" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="mb-3">
+                            <label asp-for="Listino.PerImballo" class="form-label fw-bold">
+                                <i class="fas fa-box me-1"></i>Imballo
+                            </label>
+                            <div class="input-group">
+                                <input asp-for="Listino.PerImballo" 
+                                       class="form-control" 
+                                       type="number" 
+                                       step="0.01" 
+                                       min="0" 
+                                       max="100" />
+                                <span class="input-group-text"><text>%</text></span>
+                            </div>
+                            <span asp-validation-for="Listino.PerImballo" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-end">
+                    <button type="button" id="saveListino" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i>Salva Configurazione Listino
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Prodotti Associati -->
+    <div class="card shadow">
+        <div class="card-header bg-info text-white">
+            <h5 class="card-title mb-0">
+                <i class="fas fa-boxes me-2"></i>
+                Prodotti e Prezzi 
+                @if (Model.Prodotti != null)
+                {
+                    <span class="badge bg-light text-dark ms-2">@Model.Prodotti.Count</span>
+                }
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            @if (Model.Prodotti != null && Model.Prodotti.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0" id="prodottiTable">
+                        <thead class="table-dark">
+                            <tr>
+                                <th style="width: 25%;">Prodotto</th>
+                                <th class="text-center" style="width: 12%;">Prezzo Base</th>
+                                <th class="text-center" style="width: 12%;">Prezzo V</th>
+                                <th class="text-center" style="width: 12%;">Prezzo VV</th>
+                                <th class="text-center" style="width: 15%;">Tipo Calcolo</th>
+                                <th class="text-center" style="width: 12%;">Limite Alt. (cm)</th>
+                                <th class="text-center" style="width: 12%;">Azioni</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var prodotto in Model.Prodotti)
+                            {
+                                <tr data-id="@prodotto.Id">
+                                    <td>
+                                        <strong class="text-primary">@prodotto.SNome</strong>
+                                        <small class="d-block text-muted">ID: @prodotto.IDTipoProdotto</small>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text">€</span>
+                                            <input type="number" 
+                                                   step="0.01" 
+                                                   min="0"
+                                                   class="form-control text-end editable-field"
+                                                   data-field="Prezzo"
+                                                   value="@prodotto.Prezzo" />
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text">€</span>
+                                            <input type="number" 
+                                                   step="0.01" 
+                                                   min="0"
+                                                   class="form-control text-end editable-field"
+                                                   data-field="PrezzoV"
+                                                   value="@prodotto.PrezzoV" />
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text">€</span>
+                                            <input type="number" 
+                                                   step="0.01" 
+                                                   min="0"
+                                                   class="form-control text-end editable-field"
+                                                   data-field="PrezzoVV"
+                                                   value="@prodotto.PrezzoVV" />
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <select class="form-select form-select-sm editable-field"
+                                                data-field="TipoCalcolo"
+                                                data-current-value="@prodotto.TipoCalcolo">
+                                            <option value="">Seleziona...</option>
+                                            <option value="MQ">Metro Quadro</option>
+                                            <option value="ML">Metro Lineare</option>
+                                            <option value="PZ">Pezzo</option>
+                                            <option value="KG">Chilogrammo</option>
+                                            <option value="LT">Litro</option>
+                                        </select>
+                                    </td>
+                                    <td class="text-center">
+                                        <input type="number" 
+                                               step="0.01" 
+                                               min="0"
+                                               class="form-control form-control-sm text-end editable-field"
+                                               data-field="LimiteAltezza"
+                                               value="@prodotto.LimiteAltezza" />
+                                    </td>
+                                    <td class="text-center">
+                                        <button type="button" 
+                                                class="btn btn-sm btn-success save-row" 
+                                                data-id="@prodotto.Id"
+                                                title="Salva modifiche">
+                                            <i class="fas fa-save"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="card-footer bg-light">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Modifica i valori e clicca il pulsante salva per ogni riga
+                        </small>
+                        <button type="button" id="saveAllProducts" class="btn btn-success">
+                            <i class="fas fa-save me-2"></i>Salva Tutti i Prodotti
+                        </button>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">Nessun prodotto associato</h5>
+                    <p class="text-muted">Non ci sono prodotti configurati per questo listino</p>
+                    <button type="button" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Aggiungi Prodotti
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Salva listino
+            $('#saveListino').click(function() {
+                var formData = {
+                    IDListino: $('#Listino_IDListino').val(),
+                    NomeListino: $('#Listino_NomeListino').val(),
+                    PerTrasporto: $('#Listino_PerTrasporto').val() || null,
+                    CostoCapra: $('#Listino_CostoCapra').val() || null,
+                    PerImballo: $('#Listino_PerImballo').val() || null
+                };
+
+                $.ajax({
+                    url: '@Url.Action("UpdateListino")',
+                    type: 'POST',
+                    data: formData,
+                    headers: {
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            showAlert('success', response.message);
+                        } else {
+                            showAlert('danger', response.message);
+                        }
+                    },
+                    error: function() {
+                        showAlert('danger', 'Errore durante il salvataggio del listino.');
+                    }
+                });
+            });
+
+            // Salva singolo prodotto
+            $('.save-row').click(function() {
+                var row = $(this).closest('tr');
+                var id = $(this).data('id');
+                
+                var data = {
+                    Id: id,
+                    IDListino: $('#Listino_IDListino').val(),
+                    Prezzo: parseFloat(row.find('[data-field="Prezzo"]').val()) || null,
+                    PrezzoV: parseFloat(row.find('[data-field="PrezzoV"]').val()) || null,
+                    PrezzoVV: parseFloat(row.find('[data-field="PrezzoVV"]').val()) || null,
+                    TipoCalcolo: row.find('[data-field="TipoCalcolo"]').val() || null,
+                    LimiteAltezza: parseFloat(row.find('[data-field="LimiteAltezza"]').val()) || null
+                };
+
+                $.ajax({
+                    url: '@Url.Action("UpdateProdotto")',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(data),
+                    headers: {
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            row.addClass('table-success');
+                            setTimeout(function() {
+                                row.removeClass('table-success');
+                            }, 2000);
+                            showAlert('success', response.message);
+                        } else {
+                            showAlert('danger', response.message);
+                        }
+                    },
+                    error: function() {
+                        showAlert('danger', 'Errore durante il salvataggio del prodotto.');
+                    }
+                });
+            });
+
+            // Salva tutti i prodotti
+            $('#saveAllProducts').click(function() {
+                var button = $(this);
+                button.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Salvando...');
+                
+                var promises = [];
+                $('#prodottiTable tbody tr').each(function() {
+                    var row = $(this);
+                    var id = row.data('id');
+                    
+                    var data = {
+                        Id: id,
+                        IDListino: $('#Listino_IDListino').val(),
+                        Prezzo: parseFloat(row.find('[data-field="Prezzo"]').val()) || null,
+                        PrezzoV: parseFloat(row.find('[data-field="PrezzoV"]').val()) || null,
+                        PrezzoVV: parseFloat(row.find('[data-field="PrezzoVV"]').val()) || null,
+                        TipoCalcolo: row.find('[data-field="TipoCalcolo"]').val() || null,
+                        LimiteAltezza: parseFloat(row.find('[data-field="LimiteAltezza"]').val()) || null
+                    };
+
+                    var promise = $.ajax({
+                        url: '@Url.Action("UpdateProdotto")',
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify(data),
+                        headers: {
+                            'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                        }
+                    });
+                    
+                    promises.push(promise);
+                });
+
+                $.when.apply($, promises).done(function() {
+                    showAlert('success', 'Tutti i prodotti sono stati salvati con successo!');
+                    $('#prodottiTable tbody tr').addClass('table-success');
+                    setTimeout(function() {
+                        $('#prodottiTable tbody tr').removeClass('table-success');
+                    }, 2000);
+                }).fail(function() {
+                    showAlert('danger', 'Errore durante il salvataggio di alcuni prodotti.');
+                }).always(function() {
+                    button.prop('disabled', false).html('<i class="fas fa-save me-2"></i>Salva Tutti i Prodotti');
+                });
+            });
+
+            // Highlight delle righe modificate
+            $('.editable-field').on('input change', function() {
+                $(this).closest('tr').addClass('table-warning');
+            });
+        });
+
+        function showAlert(type, message) {
+            var alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+            var iconClass = type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-triangle';
+            
+            var alert = $('<div class="alert ' + alertClass + ' alert-dismissible fade show" role="alert">' +
+                '<i class="' + iconClass + ' me-2"></i>' +
+                message +
+                '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>' +
+                '</div>');
+            
+            $('#messageContainer').empty().append(alert);
+            
+            setTimeout(function() {
+                alert.fadeOut('slow', function() {
+                    $(this).remove();
+                });
+            }, 4000);
+
+            // Scroll to top per vedere il messaggio
+            $('html, body').animate({ scrollTop: 0 }, 'fast');
+        }
+    </script>
+}
+
+<style>
+.editable-field:focus {
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+    border-color: #28a745;
+}
+
+.table-warning {
+    background-color: rgba(255, 193, 7, 0.1);
+}
+
+.table-success {
+    background-color: rgba(40, 167, 69, 0.1);
+}
+
+.input-group-sm .input-group-text {
+    font-size: 0.875rem;
+}
+</style>

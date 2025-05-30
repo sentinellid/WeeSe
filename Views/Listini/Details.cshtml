@@ -1,0 +1,202 @@
+﻿@model WeeSe.Models.Listino
+@{
+    ViewData["Title"] = $"Dettaglio Listino - {Model.NomeListino}";
+}
+
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-0">
+                <i class="fas fa-list-alt text-info me-2"></i>
+                Dettaglio Listino
+            </h2>
+            <p class="text-muted">@Model.NomeListino</p>
+        </div>
+        <div>
+            <a asp-action="Edit" asp-route-id="@Model.IDListino" class="btn btn-warning">
+                <i class="fas fa-edit me-2"></i>Modifica
+            </a>
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Torna all'Elenco
+            </a>
+        </div>
+    </div>
+
+    <!-- Informazioni Listino -->
+    <div class="card shadow">
+        <div class="card-header bg-info text-white">
+            <h5 class="card-title mb-0">
+                <i class="fas fa-cog me-2"></i>
+                Configurazione Listino
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="info-item">
+                        <label class="fw-bold text-muted">Trasporto:</label>
+                        <div class="value">
+                            @if (Model.PerTrasporto.HasValue)
+                            {
+                                <span class="badge bg-info fs-6">@Model.PerTrasporto.Value.ToString("0.00")%</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">Non configurato</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="info-item">
+                        <label class="fw-bold text-muted">Costo Capra:</label>
+                        <div class="value">
+                            @if (Model.CostoCapra.HasValue)
+                            {
+                                <span class="text-success fw-bold fs-6">@Model.CostoCapra.Value.ToString("C2")</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">Non configurato</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="info-item">
+                        <label class="fw-bold text-muted">Imballo:</label>
+                        <div class="value">
+                            @if (Model.PerImballo.HasValue)
+                            {
+                                <span class="badge bg-warning text-dark fs-6">@Model.PerImballo.Value.ToString("0.00")%</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">Non configurato</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="info-item">
+                        <label class="fw-bold text-muted">ID Listino:</label>
+                        <div class="value">
+                            <span class="badge bg-secondary">#@Model.IDListino</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Prodotti Associati -->
+    <div class="card shadow mt-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="card-title mb-0">
+                <i class="fas fa-boxes me-2"></i>
+                Prodotti Configurati
+            </h5>
+        </div>
+        <div class="card-body">
+            @if (Model.ListinoProdotti != null && Model.ListinoProdotti.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Prodotto</th>
+                                <th class="text-center">Prezzo Base</th>
+                                <th class="text-center">Prezzo V</th>
+                                <th class="text-center">Prezzo VV</th>
+                                <th class="text-center">Tipo Calcolo</th>
+                                <th class="text-center">Limite Altezza</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.ListinoProdotti)
+                            {
+                                <tr>
+                                    <td>
+                                        <strong>@(item.Prodotto?.SNome ?? "Prodotto non trovato")</strong>
+                                    </td>
+                                    <td class="text-center">
+                                        @if (item.Prezzo.HasValue)
+                                        {
+                                            <span class="text-success fw-bold">@item.Prezzo.Value.ToString("C2")</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        @if (item.PrezzoV.HasValue)
+                                        {
+                                            <span class="text-success fw-bold">@item.PrezzoV.Value.ToString("C2")</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        @if (item.PrezzoVV.HasValue)
+                                        {
+                                            <span class="text-success fw-bold">@item.PrezzoVV.Value.ToString("C2")</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        @if (!string.IsNullOrEmpty(item.TipoCalcolo))
+                                        {
+                                            <span class="badge bg-info">@item.TipoCalcolo</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Non specificato</span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        @if (item.LimiteAltezza.HasValue)
+                                        {
+                                            <span>@item.LimiteAltezza.Value.ToString("0.00") cm</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">Nessun prodotto configurato</h5>
+                    <p class="text-muted">Non ci sono prodotti associati a questo listino</p>
+                    <a asp-action="Edit" asp-route-id="@Model.IDListino" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Aggiungi Prodotti
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .info-item {
+        margin-bottom: 1rem;
+    }
+
+        .info-item .value {
+            margin-top: 0.25rem;
+        }
+</style>

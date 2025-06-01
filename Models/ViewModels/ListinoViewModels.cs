@@ -50,7 +50,7 @@ namespace WeeSe.ViewModels
         public decimal? PrezzoV { get; set; }
         public decimal? PrezzoVV { get; set; }
         public string TipoCalcolo { get; set; } = string.Empty;
-        public decimal? LimiteAltezza { get; set; }
+        public int? LimiteAltezza { get; set; }
         public string SNome { get; set; } = string.Empty;
     }
 

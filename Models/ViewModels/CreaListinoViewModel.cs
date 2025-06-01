@@ -44,6 +44,6 @@ namespace WeeSe.Models.ViewModels
         public decimal? Prezzo { get; set; }
         public decimal? PrezzoV { get; set; }
         public decimal? PrezzoVV { get; set; }
-        public decimal? LimiteAltezza { get; set; }
+        public int? LimiteAltezza { get; set; }
     }
 }

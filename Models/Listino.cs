@@ -13,7 +13,7 @@ namespace WeeSe.Models
         [Required(ErrorMessage = "Il nome del listino è obbligatorio")]
         [StringLength(100, ErrorMessage = "Il nome non può superare i 100 caratteri")]
         [Display(Name = "Nome Listino")]
-        public string NomeListino { get; set; }
+        public string NomeListino { get; set; } = String.Empty;
 
         [Display(Name = "% Trasporto")]
         [Range(0, 100, ErrorMessage = "La percentuale deve essere tra 0 e 100")]
@@ -35,8 +35,6 @@ namespace WeeSe.Models
     public class ListinoProdotto
     {
         [Key]
-        public int Id { get; set; }
-
         public int IDListino { get; set; }
         public int IDTipoProdotto { get; set; }
 
@@ -50,9 +48,9 @@ namespace WeeSe.Models
         public decimal? PrezzoVV { get; set; }
 
         [StringLength(50)]
-        public string TipoCalcolo { get; set; }
+        public string TipoCalcolo { get; set; } = String.Empty;
 
-        public decimal? LimiteAltezza { get; set; }
+        public int? LimiteAltezza { get; set; }
 
         // Navigazione
         [ForeignKey("IDListino")]

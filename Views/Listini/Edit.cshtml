@@ -280,7 +280,7 @@
                     PrezzoV: parseFloat(row.find('[data-field="PrezzoV"]').val()) || null,
                     PrezzoVV: parseFloat(row.find('[data-field="PrezzoVV"]').val()) || null,
                     TipoCalcolo: row.find('[data-field="TipoCalcolo"]').val() || null,
-                    LimiteAltezza: parseFloat(row.find('[data-field="LimiteAltezza"]').val()) || null
+                    LimiteAltezza: parseInt(row.find('[data-field="LimiteAltezza"]').val()) || null
                 };
 
                 $.ajax({
@@ -325,7 +325,7 @@
                         PrezzoV: parseFloat(row.find('[data-field="PrezzoV"]').val()) || null,
                         PrezzoVV: parseFloat(row.find('[data-field="PrezzoVV"]').val()) || null,
                         TipoCalcolo: row.find('[data-field="TipoCalcolo"]').val() || null,
-                        LimiteAltezza: parseFloat(row.find('[data-field="LimiteAltezza"]').val()) || null
+                        LimiteAltezza: parseInt(row.find('[data-field="LimiteAltezza"]').val()) || null
                     };
 
                     var promise = $.ajax({

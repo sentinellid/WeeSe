@@ -103,7 +103,6 @@ namespace WeeSe.Controllers
                                   join p in _context.Set<Prodotto>() on lp.IDTipoProdotto equals p.IDTipoProdotto
                                   select new ListinoProdottoEditItem
                                   {
-                                      Id = lp.Id,
                                       IDListino = l.IDListino,
                                       IDTipoProdotto = lp.IDTipoProdotto,
                                       NomeListino = l.NomeListino,

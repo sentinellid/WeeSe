@@ -1,168 +1,152 @@
 @{
-    ViewData["Title"] = "Dashboard WeeSe";
+    ViewData["Title"] = "Dashboard";
 }
 
-<div class="dashboard-container">
-    <div class="welcome-section">
-        <div class="row">
-            <div class="col-12">
-                <div class="welcome-card">
-                    <h1><i class="fas fa-tachometer-alt"></i> Dashboard WeeSe</h1>
-                    <p class="lead">Benvenuto nel sistema di configurazione vetrate professionali</p>
-                    <p>Utente connesso: <strong>@User.Identity?.Name</strong></p>
+<!-- Header principale -->
+<div class="text-center mb-5">
+    <div class="bg-primary text-white p-5 rounded-3 shadow-lg" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;">
+        <div class="mb-3">
+            <i class="fas fa-glass-whiskey fa-3x text-white"></i>
+        </div>
+        <h1 class="display-3 fw-bold mb-2">Dashboard WeeSe</h1>
+        <p class="lead mb-2">Benvenuto nel sistema di configurazione vetrate professionali</p>
+        <p class="mb-0">
+            <strong>Ultimo accesso: CORTESE</strong>
+        </p>
+    </div>
+</div>
+
+
+<!-- Grid delle sezioni principali -->
+<div class="row g-4">
+    <!-- Gestione Utenze -->
+    <div class="col-lg-4 col-md-6">
+        <div class="card h-100 shadow-sm border-0">
+            <div class="card-body text-center p-4">
+                <div class="mb-4">
+                    <i class="fas fa-users fa-3x text-primary"></i>
                 </div>
+                <h4 class="card-title fw-bold mb-3">Gestione Utenze</h4>
+                <p class="card-text text-muted mb-4">
+                    Amministra utenti e permessi del sistema
+                </p>
+                <a href="#" class="btn btn-primary btn-lg px-4">
+                    <i class="fas fa-arrow-right me-2"></i>Vai
+                </a>
             </div>
         </div>
     </div>
 
-    <div class="main-modules">
-        <div class="row g-4">
-            <!-- Gestione Utenze -->
-            <div class="col-md-6 col-lg-4">
-                <div class="module-card">
-                    <div class="module-icon">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <h3>Gestione Utenze</h3>
-                    <p>Amministra utenti e permessi del sistema</p>
-                    <a href="@Url.Action("Index", "GestioneUtenze")" class="btn btn-primary">
-                        <i class="fas fa-arrow-right"></i> Vai
-                    </a>
+    <!-- Gestione Listini -->
+    <div class="col-lg-4 col-md-6">
+        <div class="card h-100 shadow-sm border-0">
+            <div class="card-body text-center p-4">
+                <div class="mb-4">
+                    <i class="fas fa-list fa-3x text-primary"></i>
                 </div>
+                <h4 class="card-title fw-bold mb-3">Gestione Listini</h4>
+                <p class="card-text text-muted mb-4">
+                    Configura prezzi e listini prodotti
+                </p>
+                <a href="#" class="btn btn-primary btn-lg px-4">
+                    <i class="fas fa-arrow-right me-2"></i>Vai
+                </a>
             </div>
-
-            <!-- Gestione Listini -->
-            <div class="col-md-6 col-lg-4">
-                <div class="module-card">
-                    <div class="module-icon">
-                        <i class="fas fa-list-alt"></i>
-                    </div>
-                    <h3>Gestione Listini</h3>
-                    <p>Configura prezzi e listini prodotti</p>
-                    <a href="@Url.Action("Index", "Listini")" class="btn btn-primary">
-                        <i class="fas fa-arrow-right"></i> Vai
-                    </a>
-                </div>
-            </div>
-
-            <!-- Preventivi -->
-            <div class="col-md-6 col-lg-4">
-                <div class="module-card">
-                    <div class="module-icon">
-                        <i class="fas fa-calculator"></i>
-                    </div>
-                    <h3>Preventivi</h3>
-                    <p>Crea e gestisci preventivi clienti</p>
-                    <a href="@Url.Action("Index", "Preventivi")" class="btn btn-success">
-                        <i class="fas fa-arrow-right"></i> Vai
-                    </a>
-                </div>
-            </div>
-
-            <!-- Ordini -->
-            <div class="col-md-6 col-lg-4">
-                <div class="module-card">
-                    <div class="module-icon">
-                        <i class="fas fa-shopping-cart"></i>
-                    </div>
-                    <h3>Ordini</h3>
-                    <p>Gestisci ordini e stato lavorazioni</p>
-                    <a href="@Url.Action("Index", "Ordini")" class="btn btn-warning">
-                        <i class="fas fa-arrow-right"></i> Vai
-                    </a>
-                </div>
-            </div>
-
-            <!-- Commesse -->
-            <div class="col-md-6 col-lg-4">
-                <div class="module-card">
-                    <div class="module-icon">
-                        <i class="fas fa-project-diagram"></i>
-                    </div>
-                    <h3>Commesse</h3>
-                    <p>Pianifica e monitora le commesse</p>
-                    <a href="@Url.Action("Index", "Commesse")" class="btn btn-info">
-                        <i class="fas fa-arrow-right"></i> Vai
-                    </a>
-                </div>
-            </div>
-
-            <!-- Reports -->
-            <div class="col-md-6 col-lg-4">
-                <div class="module-card">
-                    <div class="module-icon">
-                        <i class="fas fa-chart-bar"></i>
-                    </div>
-                    <h3>Reports</h3>
-                    <p>Analisi e statistiche di vendita</p>
-                    <a href="#" class="btn btn-secondary">
-                        <i class="fas fa-arrow-right"></i> Vai
-                    </a>
-                </div>
-            </div>
-
-            <!-- Magazzino -->
-            <div class="col-md-6 col-lg-4">
-                <div class="module-card">
-                    <div class="module-icon">
-                        <i class="fas fa-chart-bar"></i>
-                    </div>
-                    <h3>Magazzino</h3>
-                    <p>Inventario</p>
-                    <a href="#" class="btn btn-secondary">
-                        <i class="fas fa-arrow-right"></i> Vai
-                    </a>
-                </div>
-            </div>
-
-            <!-- PERCENTUALI AGENTI -->
-            <div class="col-md-6 col-lg-4">
-                <div class="module-card">
-                    <div class="module-icon">
-                        <i class="fas fa-chart-bar"></i>
-                    </div>
-                    <h3>Agenti</h3>
-                    <p>Percentuali</p>
-                    <a href="#" class="btn btn-secondary">
-                        <i class="fas fa-arrow-right"></i> Vai
-                    </a>
-                </div>
-            </div>
-
         </div>
     </div>
 
-    <!-- Statistiche veloci -->
-    <div class="quick-stats mt-5">
-        <div class="row g-4">
-            <div class="col-md-3">
-                <div class="stat-card text-center">
-                    <i class="fas fa-file-invoice-dollar stat-icon text-success"></i>
-                    <h4>0</h4>
-                    <p>Preventivi Aperti</p>
+    <!-- Preventivi -->
+    <div class="col-lg-4 col-md-6">
+        <div class="card h-100 shadow-sm border-0">
+            <div class="card-body text-center p-4">
+                <div class="mb-4">
+                    <i class="fas fa-calculator fa-3x text-success"></i>
                 </div>
+                <h4 class="card-title fw-bold mb-3">Preventivi</h4>
+                <p class="card-text text-muted mb-4">
+                    Crea e gestisci preventivi clienti
+                </p>
+                <a asp-controller="Preventivi" asp-action="Index" class="btn btn-success btn-lg px-4">
+                    <i class="fas fa-arrow-right me-2"></i>Vai
+                </a>
             </div>
-            <div class="col-md-3">
-                <div class="stat-card text-center">
-                    <i class="fas fa-clock stat-icon text-warning"></i>
-                    <h4>0</h4>
-                    <p>Ordini in Lavorazione</p>
+        </div>
+    </div>
+
+    <!-- Ordini -->
+    <div class="col-lg-4 col-md-6">
+        <div class="card h-100 shadow-sm border-0">
+            <div class="card-body text-center p-4">
+                <div class="mb-4">
+                    <i class="fas fa-shopping-cart fa-3x text-warning"></i>
                 </div>
+                <h4 class="card-title fw-bold mb-3">Ordini</h4>
+                <p class="card-text text-muted mb-4">
+                    Gestisci ordini e stato lavorazioni
+                </p>
+                <a asp-controller="Ordini" asp-action="Index" class="btn btn-warning btn-lg px-4">
+                    <i class="fas fa-arrow-right me-2"></i>Vai
+                </a>
             </div>
-            <div class="col-md-3">
-                <div class="stat-card text-center">
-                    <i class="fas fa-check-circle stat-icon text-info"></i>
-                    <h4>0</h4>
-                    <p>Commesse Attive</p>
+        </div>
+    </div>
+
+    <!-- Commesse -->
+    <div class="col-lg-4 col-md-6">
+        <div class="card h-100 shadow-sm border-0">
+            <div class="card-body text-center p-4">
+                <div class="mb-4">
+                    <i class="fas fa-tasks fa-3x text-info"></i>
                 </div>
+                <h4 class="card-title fw-bold mb-3">Commesse</h4>
+                <p class="card-text text-muted mb-4">
+                    Pianifica e monitora le commesse
+                </p>
+                <a asp-controller="Commesse" asp-action="Index" class="btn btn-info btn-lg px-4">
+                    <i class="fas fa-arrow-right me-2"></i>Vai
+                </a>
             </div>
-            <div class="col-md-3">
-                <div class="stat-card text-center">
-                    <i class="fas fa-euro-sign stat-icon text-primary"></i>
-                    <h4>€0</h4>
-                    <p>Fatturato Mese</p>
+        </div>
+    </div>
+
+    <!-- Reports -->
+    <div class="col-lg-4 col-md-6">
+        <div class="card h-100 shadow-sm border-0">
+            <div class="card-body text-center p-4">
+                <div class="mb-4">
+                    <i class="fas fa-chart-bar fa-3x text-secondary"></i>
                 </div>
+                <h4 class="card-title fw-bold mb-3">Reports</h4>
+                <p class="card-text text-muted mb-4">
+                    Analisi e statistiche di vendita
+                </p>
+                <a href="#" class="btn btn-secondary btn-lg px-4">
+                    <i class="fas fa-arrow-right me-2"></i>Vai
+                </a>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    .card {
+        transition: all 0.3s ease;
+        border-radius: 15px;
+    }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1) !important;
+        }
+
+    .btn {
+        border-radius: 25px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+</style>

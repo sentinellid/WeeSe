@@ -67,7 +67,7 @@ namespace WeeSe.Models
         public int IDTipoProdotto { get; set; }
 
         [StringLength(100)]
-        public string SNome { get; set; }
+        public string SNome { get; set; } = String.Empty;
 
         // Altri campi del prodotto...
     }

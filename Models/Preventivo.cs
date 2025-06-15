@@ -105,7 +105,6 @@ namespace WeeSe.Models
         [Display(Name = "Stato")]
         public StatoPreventivo Stato { get; set; } = StatoPreventivo.Bozza;
 
-        // ✅ PROPRIETÀ CALCOLATE UTILI
         public decimal AreaTotale => Dimensioni?.Sum(d => d.Area) ?? 0;
         public int NumeroDimensioni => Dimensioni?.Count ?? 0;
 

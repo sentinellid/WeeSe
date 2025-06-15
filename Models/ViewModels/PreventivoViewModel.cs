@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using WeeSe.Dimensions;
 
 namespace WeeSe.Models.ViewModels
 {
@@ -6,7 +7,6 @@ namespace WeeSe.Models.ViewModels
     {
         public int Id { get; set; }
 
-        // ✅ SEZIONE CLIENTE
         [Required(ErrorMessage = "Il cliente è obbligatorio")]
         [Display(Name = "Cliente")]
         public string Cliente { get; set; } = string.Empty;
@@ -27,10 +27,8 @@ namespace WeeSe.Models.ViewModels
         [Display(Name = "Rif. Ordine")]
         public string? RiferimentoOrdine { get; set; }
 
-        // ✅ DIMENSIONI DINAMICHE
         public List<DimensioneViewModel> Dimensioni { get; set; } = new();
 
-        // ✅ CONFIGURAZIONE PRODOTTO
         [Display(Name = "Finitura")]
         public string? Finitura { get; set; }
 
@@ -71,64 +69,13 @@ namespace WeeSe.Models.ViewModels
         [Display(Name = "Stato")]
         public StatoPreventivo Stato { get; set; } = StatoPreventivo.Bozza;
 
-        // ✅ PROPRIETÀ CALCOLATE
         public decimal AreaTotale => Dimensioni.Sum(d => d.Area);
         public int NumeroDimensioni => Dimensioni.Count;
 
-        // ✅ LISTE PER DROPDOWN
-        public List<string> FinitureDisponibili { get; set; } = new()
-        {
-            "bianco 9010",
-            "avorio 1013",
-            "marrone 8017",
-            "ox argento",
-            "antracite DK-702"
-        };
+        public Dimensions.Dimensions? Dimensions { get; set; } = new Dimensions.Dimensions();
 
-        public List<string> VetriDisponibili { get; set; } = new()
-        {
-            "temp. 10mm",
-            "55.2 stratificato",
-            "55.2 temp/ingl"
-        };
-
-        public List<string> FinitureVetroDisponibili { get; set; } = new()
-        {
-            "chiaro",
-            "extra chiaro",
-            "fumé",
-            "satinato"
-        };
-
-        public List<string> SistemiChiusuraDisponibili { get; set; } = new()
-        {
-            "paletto",
-            "pedalina",
-            "blocco pedalina",
-            "serratura"
-        };
-
-        public List<string> VaschetteTrascinamentoDisponibili { get; set; } = new()
-        {
-            "adesiva trasparente - singola",
-            "adesiva trasparente - doppia",
-            "acciaio - doppia"
-        };
-
-        public List<string> TappiDisponibili { get; set; } = new()
-        {
-            "metallo",
-            "stillicidio"
-        };
-
-        public List<string> TrasportiDisponibili { get; set; } = new()
-        {
-            "ritiro presso ns sede",
-            "spedizione con cavalletto"
-        };
     }
 
-    // ✅ VIEWMODEL PER SINGOLA DIMENSIONE
     public class DimensioneViewModel
     {
         public int Id { get; set; }
@@ -148,7 +95,6 @@ namespace WeeSe.Models.ViewModels
         public string Descrizione => $"{LarghezzaL} x {AltezzaH} mm ({Area:F2} m²)";
     }
 
-    // ✅ VIEWMODEL PER LISTA PREVENTIVI
     public class PreventivoListViewModel
     {
         public List<Preventivo> Preventivi { get; set; } = new();
@@ -175,7 +121,6 @@ namespace WeeSe.Models.ViewModels
         }
     }
 
-    // ✅ VIEWMODEL PER DETTAGLI PREVENTIVO
     public class PreventivoDetailsViewModel
     {
         public Preventivo Preventivo { get; set; } = new();

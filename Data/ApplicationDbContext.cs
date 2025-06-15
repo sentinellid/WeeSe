@@ -25,7 +25,6 @@ namespace WeeSe.Data
         {
             base.OnModelCreating(builder);
 
-            // ✅ AGGIUNGI CONFIGURAZIONE PREVENTIVI
             builder.Entity<Preventivo>(entity =>
             {
                 entity.HasKey(e => e.Id);

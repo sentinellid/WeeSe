@@ -32,6 +32,8 @@ namespace WeeSe.Models
         [Display(Name = "Area (m²)")]
         public decimal Area => (LarghezzaL * AltezzaH) / 1000000m;
 
+        public string FinitureDisponibili { get; set; } = String.Empty;
+
         // Proprietà calcolata per descrizione
         public string Descrizione => $"{LarghezzaL} x {AltezzaH} mm ({Area:F2} m²)";
     }

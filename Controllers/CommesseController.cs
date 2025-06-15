@@ -388,7 +388,6 @@ namespace WeeSe.Controllers
             }
         }
 
-        // API per ricerca rapida
         [HttpGet]
         public async Task<IActionResult> SearchCommesse(string term)
         {

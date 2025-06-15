@@ -6,7 +6,6 @@ namespace WeeSe.Extensions
 {
     public static class EnumExtensions
     {
-        // ✅ METODO GENERICO PER TUTTI GLI ENUM
         public static string GetDisplayName(this Enum enumValue)
         {
             var displayAttribute = enumValue
@@ -18,7 +17,6 @@ namespace WeeSe.Extensions
             return displayAttribute?.GetName() ?? enumValue.ToString();
         }
 
-        // ✅ METODI SPECIFICI COME FALLBACK
         public static string GetDisplayName(this PrioritaOrdine priorita)
         {
             return priorita switch
@@ -70,7 +68,6 @@ namespace WeeSe.Extensions
             };
         }
 
-        // ✅ METODI CSS E ICONE
         public static string GetCssClass(this PrioritaOrdine priorita)
         {
             return priorita switch

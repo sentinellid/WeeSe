@@ -124,9 +124,9 @@
                             <label asp-for="Finitura" class="form-label">Finitura</label>
                             <select asp-for="Finitura" class="form-select">
                                 <option value="">Seleziona finitura...</option>
-                                @if (Model.FinitureDisponibili?.Any() == true)
+                                @if (Model.Dimensions.FinitureDisponibili?.Any() == true)
                                 {
-                                    @foreach (var finitura in Model.FinitureDisponibili)
+                                    @foreach (var finitura in Model.Dimensions.FinitureDisponibili)
                                     {
                                         <option value="@finitura">@finitura</option>
                                     }
@@ -137,9 +137,9 @@
                             <label asp-for="Vetro" class="form-label">Vetro</label>
                             <select asp-for="Vetro" class="form-select">
                                 <option value="">Seleziona vetro...</option>
-                                @if (Model.VetriDisponibili?.Any() == true)
+                                @if (Model.Dimensions.VetriDisponibili?.Any() == true)
                                 {
-                                    @foreach (var vetro in Model.VetriDisponibili)
+                                    @foreach (var vetro in Model.Dimensions.VetriDisponibili)
                                     {
                                         <option value="@vetro">@vetro</option>
                                     }
@@ -150,9 +150,9 @@
                             <label asp-for="FinituraVetro" class="form-label">Finitura vetro</label>
                             <select asp-for="FinituraVetro" class="form-select">
                                 <option value="">Seleziona finitura vetro...</option>
-                                @if (Model.FinitureVetroDisponibili?.Any() == true)
+                                @if (Model.Dimensions.FinitureVetroDisponibili?.Any() == true)
                                 {
-                                    @foreach (var finituraVetro in Model.FinitureVetroDisponibili)
+                                    @foreach (var finituraVetro in Model.Dimensions.FinitureVetroDisponibili)
                                     {
                                         <option value="@finituraVetro">@finituraVetro</option>
                                     }
@@ -182,9 +182,9 @@
                             <label asp-for="SistemaChiusura" class="form-label">Sistema di chiusura</label>
                             <select asp-for="SistemaChiusura" class="form-select">
                                 <option value="">Seleziona sistema...</option>
-                                @if (Model.SistemiChiusuraDisponibili?.Any() == true)
+                                @if (Model.Dimensions.SistemiChiusuraDisponibili?.Any() == true)
                                 {
-                                    @foreach (var sistema in Model.SistemiChiusuraDisponibili)
+                                    @foreach (var sistema in Model.Dimensions.SistemiChiusuraDisponibili)
                                     {
                                         <option value="@sistema">@sistema</option>
                                     }
@@ -256,9 +256,9 @@
                             <label asp-for="VaschettaTrascinamento" class="form-label">Vaschetta di trascinamento</label>
                             <select asp-for="VaschettaTrascinamento" class="form-select">
                                 <option value="">Seleziona vaschetta...</option>
-                                @if (Model.VaschetteTrascinamentoDisponibili?.Any() == true)
+                                @if (Model.Dimensions.VaschetteTrascinamentoDisponibili?.Any() == true)
                                 {
-                                    @foreach (var vaschetta in Model.VaschetteTrascinamentoDisponibili)
+                                    @foreach (var vaschetta in Model.Dimensions.VaschetteTrascinamentoDisponibili)
                                     {
                                         <option value="@vaschetta">@vaschetta</option>
                                     }
@@ -269,9 +269,9 @@
                             <label asp-for="Tappo" class="form-label">Tappo</label>
                             <select asp-for="Tappo" class="form-select">
                                 <option value="">Seleziona tappo...</option>
-                                @if (Model.TappiDisponibili?.Any() == true)
+                                @if (Model.Dimensions.TappiDisponibili?.Any() == true)
                                 {
-                                    @foreach (var tappo in Model.TappiDisponibili)
+                                    @foreach (var tappo in Model.Dimensions.TappiDisponibili)
                                     {
                                         <option value="@tappo">@tappo</option>
                                     }
@@ -282,9 +282,9 @@
                             <label asp-for="TrasportoImballo" class="form-label">Trasporto e imballo</label>
                             <select asp-for="TrasportoImballo" class="form-select">
                                 <option value="">Seleziona trasporto...</option>
-                                @if (Model.TrasportiDisponibili?.Any() == true)
+                                @if (Model.Dimensions.TrasportiDisponibili?.Any() == true)
                                 {
-                                    @foreach (var trasporto in Model.TrasportiDisponibili)
+                                    @foreach (var trasporto in Model.Dimensions.TrasportiDisponibili)
                                     {
                                         <option value="@trasporto">@trasporto</option>
                                     }

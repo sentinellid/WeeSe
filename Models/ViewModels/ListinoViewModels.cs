@@ -25,7 +25,7 @@ namespace WeeSe.ViewModels
     public class ListinoListItem
     {
         public int IDListino { get; set; }
-        public string NomeListino { get; set; }
+        public string NomeListino { get; set; } = String.Empty;
         public decimal? PerTrasporto { get; set; }
         public decimal? CostoCapra { get; set; }
         public decimal? PerImballo { get; set; }

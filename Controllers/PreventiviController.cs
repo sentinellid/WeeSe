@@ -27,7 +27,7 @@ namespace WeeSe.Controllers
                 .OrderByDescending(p => p.CreatedAt)
                 .ToListAsync();
 
-            return View(preventivi); // ✅ Questa View usa List<Preventivo>, non ViewModel
+            return View(preventivi); 
         }
 
         // GET: Preventivi/Details/5  
@@ -41,10 +41,10 @@ namespace WeeSe.Controllers
 
             if (preventivo == null) return NotFound();
 
-            return View(preventivo); // ✅ Questa View usa Preventivo, non ViewModel
+            return View(preventivo); 
         }
 
-        // GET: Preventivi/Create ⚠️ QUESTA USA VIEWMODEL
+        // GET: Preventivi/Create
         public IActionResult Create()
         {
             var viewModel = new PreventivoViewModel
@@ -61,10 +61,10 @@ namespace WeeSe.Controllers
                 }
             };
 
-            return View(viewModel); // ✅ PASSA IL VIEWMODEL, NON IL MODEL
+            return View(viewModel);
         }
 
-        // POST: Preventivi/Create ⚠️ QUESTA USA VIEWMODEL
+        // POST: Preventivi/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(PreventivoViewModel viewModel)
@@ -73,7 +73,6 @@ namespace WeeSe.Controllers
             {
                 try
                 {
-                    // ✅ CONVERTI VIEWMODEL → MODEL
                     var preventivo = MapViewModelToModel(viewModel);
                     preventivo.CreatedBy = User.Identity?.Name;
                     preventivo.CreatedAt = DateTime.Now;
@@ -82,26 +81,26 @@ namespace WeeSe.Controllers
                     _context.Preventivi.Add(preventivo);
                     await _context.SaveChangesAsync();
 
-                    _logger.LogInformation("✅ Preventivo {NumeroPreventivo} creato con successo!", preventivo.NumeroPreventivo);
-                    TempData["Success"] = $"✅ Preventivo {preventivo.NumeroPreventivo} creato con successo!";
+                    _logger.LogInformation("Preventivo {NumeroPreventivo} creato con successo!", preventivo.NumeroPreventivo);
+                    TempData["Success"] = "$Preventivo {preventivo.NumeroPreventivo} creato con successo!";
 
                     return RedirectToAction(nameof(Details), new { id = preventivo.Id });
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "❌ Errore durante la creazione del preventivo");
-                    TempData["Error"] = "❌ Errore durante il salvataggio: " + ex.Message;
+                    _logger.LogError(ex, "Errore durante la creazione del preventivo");
+                    TempData["Error"] = "Errore durante il salvataggio: " + ex.Message;
                 }
             }
             else
             {
-                TempData["Warning"] = "⚠️ Controlla i dati inseriti";
+                TempData["Warning"] = "Controlla i dati inseriti";
             }
 
-            return View(viewModel); // ✅ RITORNA IL VIEWMODEL IN CASO DI ERRORE
+            return View(viewModel);
         }
 
-        // GET: Preventivi/Edit/5 ⚠️ QUESTO MANCAVA!
+        // GET: Preventivi/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -112,13 +111,12 @@ namespace WeeSe.Controllers
 
             if (preventivo == null) return NotFound();
 
-            // ✅ CONVERTI MODEL → VIEWMODEL
             var viewModel = MapModelToViewModel(preventivo);
 
-            return View(viewModel); // ✅ PASSA IL VIEWMODEL ALLA VIEW
+            return View(viewModel); 
         }
 
-        // POST: Preventivi/Edit/5 ⚠️ QUESTA USA VIEWMODEL 1
+        // POST: Preventivi/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, PreventivoViewModel viewModel)
@@ -135,15 +133,12 @@ namespace WeeSe.Controllers
 
                     if (preventivo == null) return NotFound();
 
-                    // ✅ AGGIORNA IL MODEL CON I DATI DAL VIEWMODEL
                     UpdateModelFromViewModel(preventivo, viewModel);
                     preventivo.UpdatedBy = User.Identity?.Name;
                     preventivo.UpdatedAt = DateTime.Now;
 
-                    // ✅ Rimuovi dimensioni esistenti
                     _context.DimensioniFinite.RemoveRange(preventivo.Dimensioni);
 
-                    // ✅ Aggiungi nuove dimensioni valide
                     int numeroDimensione = 1;
                     foreach (var dim in viewModel.Dimensioni.Where(d => d.LarghezzaL > 0 && d.AltezzaH > 0))
                     {
@@ -162,20 +157,20 @@ namespace WeeSe.Controllers
 
                     if (nuovoStato == StatoPreventivo.Confermato)
                     {
-                        return await Accetta(id);  // 🚀 CHIAMA LA FUNZIONE ACCETTA ESISTENTE
+                        return await Accetta(id); 
                     }
 
-                    TempData["Success"] = "✅ Preventivo aggiornato con successo!";
+                    TempData["Success"] = "Preventivo aggiornato con successo!";
                     return RedirectToAction(nameof(Details), new { id });
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Errore durante l'aggiornamento del preventivo {Id}", id);
-                    TempData["Error"] = "❌ Errore durante l'aggiornamento: " + ex.Message;
+                    TempData["Error"] = "Errore durante l'aggiornamento: " + ex.Message;
                 }
             }
 
-            return View(viewModel); // ✅ RITORNA IL VIEWMODEL IN CASO DI ERRORE
+            return View(viewModel);
         }
 
         // POST: Preventivi/Delete/5
@@ -190,19 +185,18 @@ namespace WeeSe.Controllers
                 {
                     _context.Preventivi.Remove(preventivo);
                     await _context.SaveChangesAsync();
-                    TempData["Success"] = "✅ Preventivo eliminato con successo!";
+                    TempData["Success"] = "Preventivo eliminato con successo!";
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Errore durante l'eliminazione del preventivo {Id}", id);
-                TempData["Error"] = "❌ Errore durante l'eliminazione: " + ex.Message;
+                TempData["Error"] = "Errore durante l'eliminazione: " + ex.Message;
             }
 
             return RedirectToAction(nameof(Index));
         }
 
-        // ✅ METODI DI MAPPING PRIVATI
         private PreventivoViewModel MapModelToViewModel(Preventivo preventivo)
         {
             var viewModel = new PreventivoViewModel
@@ -235,7 +229,6 @@ namespace WeeSe.Controllers
                 }).ToList() ?? new List<DimensioneViewModel>()
             };
 
-            // ✅ Assicurati che ci siano almeno 3 dimensioni per il form
             while (viewModel.Dimensioni.Count < 3)
             {
                 viewModel.Dimensioni.Add(new DimensioneViewModel());
@@ -269,7 +262,6 @@ namespace WeeSe.Controllers
                 Stato = viewModel.Stato
             };
 
-            // ✅ Aggiungi dimensioni valide
             int numeroDimensione = 1;
             foreach (var dim in viewModel.Dimensioni.Where(d => d.LarghezzaL > 0 && d.AltezzaH > 0))
             {
@@ -311,9 +303,6 @@ namespace WeeSe.Controllers
             return $"PRV-{DateTime.Now:yyyyMMdd}-{DateTime.Now.Ticks.ToString()[^6..]}";
         }
 
-        // ================================
-        // 🎯 ACTION PER ACCETTARE PREVENTIVO
-        // ================================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Accetta(int id)
@@ -322,19 +311,16 @@ namespace WeeSe.Controllers
 
             try
             {
-                // 1️⃣ Trova e verifica preventivo
                 var preventivo = await _context.Preventivi
                     .FirstOrDefaultAsync(p => p.Id == id);
 
                 if (preventivo == null)
                     return Json(new { success = false, error = "Preventivo non trovato" });
 
-                // 2️⃣ Aggiorna preventivo
                 preventivo.Stato = StatoPreventivo.Confermato;
                 preventivo.UpdatedBy = User.Identity?.Name;
                 preventivo.UpdatedAt = DateTime.Now;
 
-                // 3️⃣ 🚀 CREA ORDINE AUTOMATICAMENTE
                 var numeroOrdine = await GeneraNumeroOrdineAsync();
                 var numeroCommessa = await GeneraNumeroCommessaAsync();
                 
@@ -346,8 +332,8 @@ namespace WeeSe.Controllers
                     Cliente = preventivo.Cliente,
                     Descrizione = $"Ordine generato da preventivo confermato {preventivo.NumeroPreventivo}",
                     DataOrdine = DateTime.Now,
-                    DataConsegnaRichiesta = DateTime.Now.AddDays(15), // Default 15 giorni
-                    Stato = StatoOrdine.Confermato, // 🎯 STATO INIZIALE
+                    DataConsegnaRichiesta = DateTime.Now.AddDays(15), 
+                    Stato = StatoOrdine.Confermato, 
                     Priorita = PrioritaOrdine.Media,
                     ImportoTotale = preventivo.ImportoTotale,
                     Responsabile = User.Identity?.Name,
@@ -357,18 +343,17 @@ namespace WeeSe.Controllers
                 };
 
                 _context.Ordini.Add(ordine);
-                await _context.SaveChangesAsync(); // 💾 Salva per ottenere ordine.Id
+                await _context.SaveChangesAsync(); 
 
-                //// 4️⃣ 🚀 CREA COMMESSA AUTOMATICAMENTE  
                 var commessa = new Commessa()
                 {
-                    OrdineId = ordine.Id, // 🔗 Link all'ordine
-                    PreventivoId = preventivo.Id, // 🔗 Link al preventivo
+                    OrdineId = ordine.Id,
+                    PreventivoId = preventivo.Id,
                     NumeroCommessa = numeroCommessa,
                     Descrizione = $"Commessa per ordine {ordine.NumeroOrdine}",
                     DataInizio = DateTime.Now,
-                    DataFinePrevista = DateTime.Now.AddDays(10), // Default 10 giorni lavorazione
-                    Stato = StatoCommessa.Nuova, // 🎯 STATO INIZIALE
+                    DataFinePrevista = DateTime.Now.AddDays(10), 
+                    Stato = StatoCommessa.Nuova, 
                     Priorita = PrioritaCommessa.Media,
                     ImportoTotale = preventivo.ImportoTotale,
                     Responsabile = User.Identity?.Name,
@@ -379,22 +364,19 @@ namespace WeeSe.Controllers
 
                 _context.Commesse.Add(commessa);
 
-                //// 5️⃣ 💾 SALVA TUTTO
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
 
-                // 6️⃣ 📝 LOG
-                _logger?.LogInformation("✅ Preventivo {PreventivoId} accettato. Creati Ordine {OrdineId} e Commessa {CommessaId}", preventivo.Id, ordine.Id, commessa.Id);
+                _logger?.LogInformation("Preventivo {PreventivoId} accettato. Creati Ordine {OrdineId} e Commessa {CommessaId}", preventivo.Id, ordine.Id, commessa.Id);
 
-                TempData["Success"] = $"✅ Preventivo confermato! Creati automaticamente Ordine {numeroOrdine} e Commessa {numeroCommessa}";
+                TempData["Success"] = $"Preventivo confermato! Creati automaticamente Ordine {numeroOrdine} e Commessa {numeroCommessa}";
 
-                // 🚀 REDIRECT ALLA PAGINA DETTAGLI DELL'ORDINE APPENA CREATO
                 return RedirectToAction("Details", "Ordini", new { id = ordine.Id });
             }
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                _logger?.LogError(ex, "❌ Errore durante l'accettazione del preventivo {Id}", id);
+                _logger?.LogError(ex, "Errore durante l'accettazione del preventivo {Id}", id);
                 return Json(new
                 {
                     success = false,
@@ -403,9 +385,6 @@ namespace WeeSe.Controllers
             }
         }
 
-        // ================================
-        // 🎯 ACTION PER CAMBIO STATO NORMALE
-        // ================================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ChangeStatus(int id, StatoPreventivo nuovoStato)
@@ -459,9 +438,6 @@ namespace WeeSe.Controllers
             }
         }
 
-        // ================================
-        // 🛠️ METODI HELPER
-        // ================================
         private async Task<string> GeneraNumeroOrdineAsync()
         {
             var anno = DateTime.Now.Year;
@@ -494,21 +470,16 @@ namespace WeeSe.Controllers
                 _ => false
             };
         }
-        /// <summary>
-        /// 🎯 Crea automaticamente Ordine e Commessa quando un preventivo viene confermato
-        /// </summary>
         private async Task CreaOrdineECommessaDaPreventivo(int preventivoId)
         {
             try
             {
-                // 📥 RECUPERA IL PREVENTIVO
                 var preventivo = await _context.Preventivi.FindAsync(preventivoId);
                 if (preventivo == null)
                 {
                     throw new InvalidOperationException($"Preventivo {preventivoId} non trovato");
                 }
 
-                // 🚀 CREA ORDINE
                 var numeroOrdine = await GeneraNumeroOrdineAsync();
                 var ordine = new Ordine
                 {
@@ -528,20 +499,19 @@ namespace WeeSe.Controllers
                 };
 
                 _context.Ordini.Add(ordine);
-                await _context.SaveChangesAsync(); // 💾 Salva per ottenere ordine.Id
+                await _context.SaveChangesAsync(); 
 
-                // 🚀 CREA COMMESSA
                 var numeroCommessa = await GeneraNumeroCommessaAsync();
                 var commessa = new Commessa
                 {
-                    OrdineId = ordine.Id,           // 🔗 LINK ALL'ORDINE
-                    PreventivoId = preventivoId,    // 🔗 LINK AL PREVENTIVO
+                    OrdineId = ordine.Id,  
+                    PreventivoId = preventivoId, 
                     NumeroCommessa = numeroCommessa,
                     Cliente = preventivo.Cliente,
                     IndirizzoCliente = preventivo.Indirizzo,
                     Descrizione = $"Commessa per ordine {ordine.NumeroOrdine}",
                     DataInizio = DateTime.Now,
-                    DataFinePrevista = DateTime.Now.AddDays(10), // 10 giorni lavorativi
+                    DataFinePrevista = DateTime.Now.AddDays(10), 
                     Stato = StatoCommessa.Nuova,
                     Priorita = PrioritaCommessa.Media,
                     ImportoTotale = CalcolaImportoPreventivo(preventivo),
@@ -554,26 +524,24 @@ namespace WeeSe.Controllers
                 _context.Commesse.Add(commessa);
                 await _context.SaveChangesAsync();
 
-                _logger.LogInformation("🎯 CREATI: Ordine {NumeroOrdine} (ID: {OrdineId}) e Commessa {NumeroCommessa} (ID: {CommessaId}) per Preventivo {PreventivoId}",
+                _logger.LogInformation("CREATI: Ordine {NumeroOrdine} (ID: {OrdineId}) e Commessa {NumeroCommessa} (ID: {CommessaId}) per Preventivo {PreventivoId}",
                     numeroOrdine, ordine.Id, numeroCommessa, commessa.Id, preventivoId);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "❌ Errore durante la creazione di Ordine e Commessa per Preventivo {PreventivoId}", preventivoId);
-                throw; // Rilancia l'eccezione per il rollback della transazione
+                _logger.LogError(ex, "Errore durante la creazione di Ordine e Commessa per Preventivo {PreventivoId}", preventivoId);
+                throw; 
             }
         }
         private decimal CalcolaImportoPreventivo(Preventivo preventivo)
         {
             decimal importoBase = 0;
 
-            // 🔄 FOREACH SUI RECORD DELLA TABELLA [TBL_DimensioniFinite]
             var dimensioniFinite = _context.DimensioniFinite
                 .Where(d => d.PreventivoId == preventivo.Id)
                 .ToListAsync();
 
 
-            // 💰 COSTI AGGIUNTIVI (resto uguale)
             if (!string.IsNullOrEmpty(preventivo.TrasportoImballo) && preventivo.TrasportoImballo.Contains("spedizione"))
                 importoBase += 50; // Costo spedizione
 
